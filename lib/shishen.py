@@ -16,12 +16,13 @@ class baseServant:
         self.def_ = data_dict["def_"]
         self.cri = data_dict["cri"]
         self.criDM = data_dict["criDM"]
-        self.location = self.speed
+        self.location = self.speed # 在行动条上的初始位置
         self.team = None
         self.enemy = None
-        self.buffs = []
-        self.skill = []
-        self.passive_skill = []
+        self.status_buffs = [] # 和自身属性有关的buff列表
+        self.skills = []
+        self.passive_skills = []
+        self.immune = False # 免疫负面状态
         self.run_times = 0 # 行动次数
         self.damage_out = 0 # 伤害输出
         self.show_time = 0 # 动画时间
@@ -29,40 +30,31 @@ class baseServant:
         self.reset_extra_status()
 
     def set_base_data(self):
-        "式神的初始属性，由子类实现"
+        "式神的自带初始属性，由子类实现"
         raise NotImplementedError
     
     def reset_extra_status(self):
-        "重置自身的附加属性，用于结算buff效果时"
-        raise NotImplementedError
+        "重置自身的附加属性"
+        self.shield = 0
+        self.extra_atk = 0
+        self.extra_def = 0
+        self.extra_speed = 0
+        self.extra_cri = 0
+        self.extra_criDM = 0
+        self.atk_ratio = 1
+        self.def_ratio = 1
+        self.harm_ratio = 1
+        self.damage_ratio = 1
+        self.max_hp_ratio = 1
+        self.speed_ratio = 1
+        self.def_break = 0
+        self.def_reduce = 1
         
     def is_alive(self):
         return True if self.hp > 0 else False
     
-    def add_buff(self, buff):
-        self.buffs.append(buff)
-        if buff.classify == 1:
-            self.update_extra_status()
-    
-    def del_buff(self, buff):
-        self.buffs.remove(buff)
-        if buff.classify == 1:
-            self.update_extra_status()
-    
-    def get_buff(self, *, classify):
-        "从式神的buff列表中获取指定分类的buff，并按优先级排列"
-        res = [buff for buff in self.buffs if buff.classify == classify]
-        res.sort(key=lambda x: x.priority)
-        return res
-    
     def update_buff(self):
         "更新式神的buff"
-        for buff in self.get_buff(classify=1):
-            buff.layer_change()
-
-    def update_extra_status(self):
-        "更新式神的附加属性"
-        self.reset_extra_status
-        for buff in self.get_buff(classify=1):
-            buff.valid(self)
+        for buff in self.status_buffs:
+            buff.layer_update()
 

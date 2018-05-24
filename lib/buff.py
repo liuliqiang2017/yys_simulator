@@ -80,7 +80,7 @@ class Mie(StatusDebuff):
         self.target.harm_ratio -= 0.3
 
 class SteelFeather(StatusBuff):
-    "天狗的钢铁毛"
+    "天狗的钢铁毛 ID 102"
     def config(self):
         self.coexist_num = 1
         self.id = 102
@@ -95,7 +95,7 @@ class SteelFeather(StatusBuff):
         self.target.criDM -= 15
 
 class CurseFire(StatusDebuff):
-    "丑女咒火"
+    "丑女咒火 ID 103"
     def config(self):
         self.coexist_num = 1
         self.id = 103
@@ -108,7 +108,7 @@ class CurseFire(StatusDebuff):
         self.target.harm_ratio -= 0.15
 
 class FuriousEyes(StatusDebuff):
-    "两面佛怒目"
+    "两面佛怒目 ID 104"
     def config(self):
         self.coexist_num = 1
         self.id = 104
@@ -123,7 +123,7 @@ class FuriousEyes(StatusDebuff):
         self.target.def_ratio += 0.16
 
 class Fear(StatusBuff):
-    "陆生的畏"
+    "陆生的畏 ID 105"
     def config(self):
         self.coexist_num = 4
         self.id = 105
