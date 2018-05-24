@@ -7,11 +7,10 @@ buff提供如下方法：add:将生成的buff实例添加到target的buff_list�
 
 class baseBuff:
     "属性buff基类"
-    def __init__(self, caster, target, val):
+    def __init__(self, caster, target):
         super().__init__()
         self.caster = caster
         self.target = target
-        self.val = val
         self.config()
         
     def config(self):
