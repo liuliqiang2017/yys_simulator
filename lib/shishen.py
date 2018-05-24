@@ -20,6 +20,8 @@ class baseServant:
         self.team = None
         self.enemy = None
         self.buffs = []
+        self.skill = []
+        self.passive_skill = []
         self.run_times = 0 # 行动次数
         self.damage_out = 0 # 伤害输出
         self.show_time = 0 # 动画时间
