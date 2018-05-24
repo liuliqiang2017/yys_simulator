@@ -3,6 +3,7 @@
 提供以下几个方法，用于获取式神的当前攻击属性，当前防御属性等。
 """
 import random
+from damage import NormalDamage
 
 class baseServant:
     "式神基类，从给定的参数字典初始化式神的属性"
@@ -51,10 +52,82 @@ class baseServant:
         self.def_reduce = 1
         
     def is_alive(self):
-        return True if self.hp > 0 else False
+        return self.hp > 0
     
     def update_buff(self):
         "更新式神的buff"
         for buff in self.status_buffs:
             buff.layer_update()
 
+    def move(self):
+        if self.is_alive():
+            self.location += (self.speed * self.speed_ratio + self.extra_speed)
+
+    def get_def_data(self):
+        def_data = {"def" : self.def_,
+                    "extra_def" : self.extra_def,
+                    "def_ratio" : self.def_ratio,
+                    "harm_ratio" : self.harm_ratio,
+                    "shield": self.shield,
+                    "hp": self.hp,
+                    "max_hp": self.max_hp
+                    }
+        return def_data
+
+    def get_atk_data(self):
+        atk_data = {"atker" : self,
+                    "atk" : self.atk * self.atk_ratio + self.extra_atk,
+                    "damage_ratio" : self.damage_ratio,
+                    "def_break" : self.def_break,
+                    "def_reduce" : self.def_reduce,
+                    "cri" : self.cri + self.extra_cri,
+                    "criDM" : self.criDM + self.extra_criDM,
+                    "factor": 1,
+                    "act_pre_hit" : [],
+                    "act_when_hit" : [],
+                    "act_after_hit" : [],
+                    }
+        return atk_data
+    
+    def defend(self, damage):
+        # TODO 受攻击前的被动触发判定
+        # TODO 被攻击时的被动触发判定
+        # 结算攻击效果
+        damage.set_defender(self)       
+        self.damage_apply(damage.get_result())
+        # TODO 受攻击后的被动触发判定
+    
+    def damage_apply(self, damage):
+        self.hp -= damage.val
+        print("{}对{}发动{}，造成{}伤害".format(damage.atker.name, damage.defer.name, damage.name, damage.val))
+        print("{}的剩余血量是{}".format(self.name, self.hp))
+    
+    def act_ai(self):
+        if self.team.energe >= 3:
+            target = self.choose()
+            self.skill_3(target)
+        else:
+            target = self.choose()
+            self.skill_1(target)
+    
+    def skill_1(self, target, cost=0):
+        self.team.energe_change(-cost)
+        atk_dict = self.get_atk_data()
+        atk_dict["name"] = "普通攻击"
+        damage = NormalDamage(atk_dict)
+        target.defend(damage)
+
+    def skill_2(self):
+        pass
+    
+    def skill_3(self, target, cost=3):
+        self.team.energe_change(-cost)
+        atk_dict = self.get_atk_data()
+        atk_dict["factor"] = 3
+        atk_dict["name"] = "暴跳如雷"
+        damage = NormalDamage(atk_dict)
+        target.defend(damage)
+
+    def choose(self):
+        target_list = self.enemy.alive_members()
+        return random.choice(target_list)
