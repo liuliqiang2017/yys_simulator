@@ -1,6 +1,12 @@
 """
 式神类，包括玩家式神，阴阳师，木桩, 式神类基本上是个数据容器，存储了式神的各种属性。
-提供以下几个方法，用于获取式神的当前攻击属性，当前防御属性等。
+式神和几个类之间的关系如下：
+buff类：式神在回合结束调用buff类的update_layer，buff直接作用于式神类的extra_status，自己存储在式神的status_buffs。
+damage类：式神用自己的atk_data生成damage实例，由damage实例完成剩下的攻击， damage实例
+        调用target的def_data完成伤害计算，然后会把自己传给target，由target的defend方法结算最终掉血，target是式神类的实例 。
+passive_skill: 被动和御魂暂时使用相同的机制， 式神类存储被动技能，并在合适的时机触发(调用被动技能的action方法)
+            根据被动的种类不同，可能的效果有增加buff，伤害，技能改变等。
+helper类：用于实现一些比较复杂的效果，比如书翁的记仇， 草人等。和式神类的关系不是很大。
 """
 import random
 from damage import NormalDamage

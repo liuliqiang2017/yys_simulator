@@ -53,9 +53,7 @@ class IndirectDamage(Damage):
     def config(self):
         self.counter = False
         self.trigger = False
-        self.critical = False
 
 class RealDamage(Damage):
     "真实伤害，不计算防，触发被动"
-    def config(self):
-        self.critical = False
+    pass
