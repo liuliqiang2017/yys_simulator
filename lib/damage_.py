@@ -40,8 +40,8 @@ class NormalDamage(Damage):
         criDM = data_dict["criDM"] if self._cri_check() else 100
         atk_dm = data_dict["atk"] * criDM * 3 * data_dict["factor"] * data_dict["damage_ratio"] * data_dict["harm_ratio"]
         def_dm = (data_dict["def"] + data_dict["extra_def"] - data_dict["def_break"]) * data_dict["def_reduce"] + 300
-        dm = round(atk_dm / def_dm)
-        return dm
+        dm = atk_dm / def_dm
+        return round(dm)
 
 class Counter_Damage(NormalDamage):
     "反击伤害，正常伤害的一种，不可被反击"
@@ -55,7 +55,12 @@ class IndirectDamage(Damage):
         self.counter = False
         self.trigger = False
 
-# TODO 针女伤害的实现
 class RealDamage(Damage):
     "真实伤害，不计算防，触发被动"
     pass
+
+class NeedleDamage(RealDamage):
+    "针女伤害，真实伤害的一种"
+    def calculate(self, data_dict):
+        dm = min(data_dict["atk"] * 1.2, data_dict["max_hp"] * 0.1)
+        return round(dm)

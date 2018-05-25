@@ -44,7 +44,7 @@ class YuHun(basePassive):
     "御魂类"
     pass
 
-# TODO 被动技能：鸟的协战， 陆生的反击，荒的开幻境
+# TODO 被动技能：鸟的协战，荒的开幻境
 
 class SteelFeather(PassiveSkill):
     "天狗的铁毛，目前只有伤害加成部分"
@@ -85,7 +85,7 @@ class Needle(YuHun):
     def action(self, damage):
         "破盾暴击有40%几率，由damage的攻击方向防守方造成一次真实伤害"
         if  damage.critical and damage.val > damage.defer.shield and randint(1, 1000) <= 400:
-            needle_dm = damage_.RealDamage(damage.atker.get_atk_data())
+            needle_dm = damage_.NeedleDamage(damage.atker.get_atk_data())
             needle_dm.set_defender(damage.defer)
             needle_dm.get_result()
             damage.defer.defend(needle_dm)
