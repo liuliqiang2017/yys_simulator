@@ -48,12 +48,14 @@ class Counter_Damage(NormalDamage):
     def config(self):
         self.counter = False
 
+# TODO 伤害结算方式
 class IndirectDamage(Damage):
     "间接伤害，计算防，不触发被动"
     def config(self):
         self.counter = False
         self.trigger = False
 
+# TODO 针女伤害的实现
 class RealDamage(Damage):
     "真实伤害，不计算防，触发被动"
     pass
