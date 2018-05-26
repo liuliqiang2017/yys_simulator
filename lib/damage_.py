@@ -52,6 +52,7 @@ class Counter_Damage(NormalDamage):
 class IndirectDamage(Damage):
     "间接伤害，计算防，不触发被动"
     def config(self):
+        self.name = "间接伤害"
         self.counter = False
         self.trigger = False
 
@@ -61,6 +62,9 @@ class RealDamage(Damage):
 
 class NeedleDamage(RealDamage):
     "针女伤害，真实伤害的一种"
+    def config(self):
+        self.name = "针女"
+
     def calculate(self, data_dict):
         dm = min(data_dict["atk"] * 1.2, data_dict["max_hp"] * 0.1)
         return round(dm)
