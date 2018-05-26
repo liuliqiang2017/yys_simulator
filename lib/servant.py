@@ -98,10 +98,10 @@ class Servant:
         self.status.set_base_data(servant_base.BOSS_DUMMY)
         # 设置式神的御魂
         for yh in self.data_dict["yuhun"]:
-            yh().register(self)
+            yh().add(self)
         # 设置式神的被动
         for passive_skill in servant_base.BOSS_DUMMY["passive"]:
-            passive_skill().register(self)
+            passive_skill().add(self)
     
     def is_alive(self):
         return self.status.hp > 0

@@ -18,7 +18,7 @@ class Damage:
     
     def set_defender(self, defender):
         self.defer = defender
-        self.data_dict.update(defender.get_def_data())
+        self.data_dict.update(defender.status.get_def_data())
     
     def calculate(self, data_dict):
         "计算伤害值，由子类实现不同的计算方法"

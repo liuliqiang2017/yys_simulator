@@ -28,7 +28,7 @@ class basePassive:
     def config(self):
         self.act_period = 0
     
-    def register(self, owner):
+    def add(self, owner):
         self.owner = owner
         if self.act_period == 11:
             owner.trigger_pre_round.append(self)
