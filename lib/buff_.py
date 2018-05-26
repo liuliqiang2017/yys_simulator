@@ -142,12 +142,14 @@ class IndirectDM(baseBuff):
     def config(self):
         self.coexist_num = 65535
         self.id = 99
-        self.position = self.target.post_round
+        self.position = self.target.trigger_post_round
     
     def set_damage(self, damage):
         self.damage = damage
     
     def action(self):
+        self.damage.set_defender(self.target)
+        self.damage.get_result()
         self.target.defend(self.damage)
         self.remove()
     

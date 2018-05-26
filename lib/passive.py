@@ -4,9 +4,8 @@ act_period：触发时间，数值分为1X,2X, 3X，4X 方便扩展分别如下
 1x：从11到19，为回合开始前的时段
     11. 回合开始前触发，比如大天狗的加攻击，作用于owner
 2x：从21到29，为回合中的时段
-    21. 攻击前触发，比如雪童子的冰冻，作用于damage
-    22. 攻击时触发不管有没有伤害，比如网切， 作用于damage
-    23. 攻击时有伤害触发(相当于攻击后)， 破势，针女，各种控制御魂，作用于damage
+    21. 攻击前触发，比如网切等，作用于damage, 无论有没有伤害
+    23. 攻击后有伤害触发(相当于攻击后)， 破势，针女，各种控制御魂，作用于damage
 3x：从31到39，为回合结束的时段
     31. 回合结束时触发，比如招财猫，轮入道等，作用于owner
 4x：从41到49，为回合外的时段
@@ -31,6 +30,17 @@ class basePassive:
     
     def register(self, owner):
         self.owner = owner
+        if self.act_period == 11:
+            self.owner.trigger_pre_round.append(self)
+        elif self.act_period == 21:
+            self.owner.trigger_pre_atk.append(self)
+        elif self.act_period == 23:
+            self.owner.trigger_post_atk.append(self)
+        elif self.act_period == 31:
+            self.owner.trigger_post_round.append(self)
+        elif self.act_period == 41:
+            self.owner.trigger_by_hit.append(self)
+        
     
     def action(self):
         "触发效果，由子类实现"
@@ -93,7 +103,7 @@ class Needle(YuHun):
 class NetCut(YuHun):
     "网切"
     def config(self):
-        self.act_period = 22
+        self.act_period = 21
     
     def action(self, damage):
         "50%几率降低对方45%的防御"
