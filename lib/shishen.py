@@ -1,5 +1,6 @@
 """
 式神类，包括玩家式神，阴阳师，木桩, 式神类基本上是个数据容器，存储了式神的各种属性。
+TODO 把士绅类拆分，新建shishen_data类专门管理属性，其他类似。
 式神和几个类之间的关系如下：
 buff类：式神在回合结束调用buff类的update_layer，buff直接作用于式神类的extra_status，自己存储在式神的status_buffs。
 damage类：式神用自己的atk_data生成damage实例，由damage实例完成剩下的攻击， damage实例
