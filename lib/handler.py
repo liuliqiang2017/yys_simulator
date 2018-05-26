@@ -21,6 +21,9 @@ class PreAction(Handler):
         # TODO 结算幻境类
         # TODO 结算伤害类buff
         # TODO 结算自身被动
+        for p_skill in self.actor.passive_skills:
+            if 10 < p_skill.act_period < 20:
+                p_skill.action() 
         # TODO 判断是否能动，不能动跳过行动回合
 
 # TODO 回合中的过程

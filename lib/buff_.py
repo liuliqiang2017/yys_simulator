@@ -6,11 +6,12 @@ buff提供如下方法：add:将生成的buff实例添加到target的buff_list�
 """
 
 class baseBuff:
-    "属性buff基类"
+    "buff基类"
     def __init__(self, caster, target):
         super().__init__()
         self.caster = caster
         self.target = target
+        self.position = target.status_buff
         self.config()
         
     def config(self):
@@ -19,22 +20,24 @@ class baseBuff:
         self.layer = 1
 
     def add(self):
-        same_buffs = [buff for buff in self.target.buffs if buff.id == self.id]
+        same_buffs = [buff for buff in self.position if buff.id == self.id]
         if len(same_buffs) < self.coexist_num:
-            self.target.buffs.append(self)
+            self.position.append(self)
             self._valid()
         else:
             same_buffs[0].remove()
             self.add()
 
     def _valid(self):
+        # 生效过程，由子类实现
         raise NotImplementedError
     
     def remove(self):
         self._invalid()
-        self.target.buffs.remove(self)        
+        self.position.remove(self)
     
     def _invalid(self):
+        # 反生效过程，由子类实现
         raise NotImplementedError
 
     def layer_update(self):
@@ -60,10 +63,10 @@ class Xing(StatusBuff):
         self.layer = 3
     
     def _valid(self):
-        self.target.damage_ratio += 0.3
+        self.target.status.damage_ratio += 0.3
     
     def _invalid(self):
-        self.target.damage_ratio -= 0.3
+        self.target.status.damage_ratio -= 0.3
 
 class Mie(StatusDebuff):
     "晴明灭, ID 101"
@@ -73,10 +76,10 @@ class Mie(StatusDebuff):
         self.layer = 3
     
     def _valid(self):
-        self.target.harm_ratio += 0.3
+        self.target.status.harm_ratio += 0.3
     
     def _invalid(self):
-        self.target.harm_ratio -= 0.3
+        self.target.status.harm_ratio -= 0.3
 
 class SteelFeather(StatusBuff):
     "天狗的钢铁毛 ID 102"
@@ -86,12 +89,12 @@ class SteelFeather(StatusBuff):
         self.layer = 1
     
     def _valid(self):
-        self.target.atk_ratio += 0.15
-        self.target.criDM += 15
+        self.target.status.atk_ratio += 0.15
+        self.target.status.criDM += 15
     
     def _invalid(self):
-        self.target.atk_ratio -= 0.15
-        self.target.criDM -= 15
+        self.target.status.atk_ratio -= 0.15
+        self.target.status.criDM -= 15
 
 class CurseFire(StatusDebuff):
     "丑女咒火 ID 103"
@@ -101,10 +104,10 @@ class CurseFire(StatusDebuff):
         self.layer = 2
     
     def _valid(self):
-        self.target.harm_ratio += 0.15
+        self.target.status.harm_ratio += 0.15
     
     def _invalid(self):
-        self.target.harm_ratio -= 0.15
+        self.target.status.harm_ratio -= 0.15
 
 class FuriousEyes(StatusDebuff):
     "两面佛怒目 ID 104"
@@ -114,12 +117,12 @@ class FuriousEyes(StatusDebuff):
         self.layer = 2
     
     def _valid(self):
-        self.target.atk_ratio -= 0.16
-        self.target.def_ratio -= 0.16
+        self.target.status.atk_ratio -= 0.16
+        self.target.status.def_ratio -= 0.16
     
     def _invalid(self):
-        self.target.atk_ratio += 0.16
-        self.target.def_ratio += 0.16
+        self.target.status.atk_ratio += 0.16
+        self.target.status.def_ratio += 0.16
 
 class Fear(StatusBuff):
     "陆生的畏 ID 105"
@@ -129,7 +132,27 @@ class Fear(StatusBuff):
         self.layer = 4
     
     def _valid(self):
-        self.target.damage_ratio += 0.75
+        self.target.status.damage_ratio += 0.75
     
     def _invalid(self):
-        self.target.damage_ratio -= 0.75
+        self.target.status.damage_ratio -= 0.75
+
+class IndirectDM(baseBuff):
+    "间接伤害buff ID为特有数字99"
+    def config(self):
+        self.coexist_num = 65535
+        self.id = 99
+        self.position = self.target.post_round
+    
+    def set_damage(self, damage):
+        self.damage = damage
+    
+    def action(self):
+        self.target.defend(self.damage)
+        self.remove()
+    
+    def _valid(self):
+        pass
+    
+    def _invalid(self):
+        pass
