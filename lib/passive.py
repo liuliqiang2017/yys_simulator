@@ -31,15 +31,15 @@ class basePassive:
     def register(self, owner):
         self.owner = owner
         if self.act_period == 11:
-            self.owner.trigger_pre_round.append(self)
+            owner.trigger_pre_round.append(self)
         elif self.act_period == 21:
-            self.owner.trigger_pre_atk.append(self)
+            owner.trigger_pre_atk.append(self)
         elif self.act_period == 23:
-            self.owner.trigger_post_atk.append(self)
+            owner.trigger_post_atk.append(self)
         elif self.act_period == 31:
-            self.owner.trigger_post_round.append(self)
+            owner.trigger_post_round.append(self)
         elif self.act_period == 41:
-            self.owner.trigger_by_hit.append(self)
+            owner.trigger_by_hit.append(self)
         
     
     def action(self):
