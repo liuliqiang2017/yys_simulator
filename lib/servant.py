@@ -1,6 +1,7 @@
 """
 式神相关类， 包括式神数据类Servant_Data, 式神技能类Servant_Skill, 伤害统计类Statistic， 式神基类
 """
+from collections import defaultdict
 from random import choice
 import servant_base
 from damage_ import NormalDamage
@@ -76,7 +77,27 @@ class Servant_Data:
 
 # TODO 式神技能类Servant_Skill
 
-# TODO 伤害统计类Statistic
+class Statistic:
+    "伤害统计类"
+    def __init__(self, owner):
+        self.owner = owner
+        self.record = defaultdict(int)
+    
+    def add_damage(self, damage):
+        self.record["total_damage"] += damage.val
+        self.record[damage.name] += damage.val
+    
+    def add_skill(self, skill_name, num=1):
+        self.record[skill_name + "次数"] += 1
+    
+    def add_round(self, num=1):
+        self.record["round"] += num
+    
+    def add_showtime(self, time):
+        self.record["showtime"] += time
+    
+    def get_result(self):
+        return self.record
 
 class Servant:
     "式神基类"
@@ -85,11 +106,13 @@ class Servant:
         self.data_dict = data_dict
         self.name = data_dict.get("name", "式神")
         self.status = Servant_Data(data_dict, self)
+        self.recorder = Statistic(self)
         self.location = self.status.speed
         self.immune = False
         self.team = None
         self.enemy = None
         self.arena = None
+        self.run_once = []
         self.status_buff = []
         self.trigger_pre_round = []
         self.trigger_post_round = []
@@ -108,43 +131,52 @@ class Servant:
         # 设置式神的被动
         for passive_skill in base["passive"]:
             passive_skill().add(self)
+        # 使用开场运行一次的技能
+        for each in self.run_once:
+            each.action()
     
     def is_alive(self):
         return self.status.hp > 0
     
     def move(self, distance=None):
-        self.location += distance if distance else self.status.speed + self.status.extra_speed
+        self.location += distance if distance else self.status.get_speed()
 
-    def skill_1(self, targets, cost=0):
+    def skill_1(self, target, cost=0):
+        # 扣鬼火
         self.team.energe_change(-cost)
-        target = choice(targets)
+        # 输出伤害
         damage = NormalDamage(self)
         damage.name = "普通攻击"
         damage.factor = 1.25
         damage.set_defender(target)
         damage.run()
+        # 记录输出,add_showtime的参数为动画时间
+        self.recorder.add_showtime(time=1)
+        self.recorder.add_skill(damage.name)
     
     def skill_2(self, targets, cost=0):
         # 这三个技能都需要子类去分别重载
         pass
     
-    def skill_3(self, targets, cost=3):
+    def skill_3(self, target, cost=3):
         self.team.energe_change(-cost)
-        target = choice(targets)
         damage = NormalDamage(self)
         damage.name = "暴跳如雷"
         damage.factor = 3
         damage.set_defender(target)
         damage.run()
+        # 记录输出,add_showtime的参数为动画时间
+        self.recorder.add_showtime(time=3)
+        self.recorder.add_skill(damage.name)
     
     def ai_act(self):
         "自动战斗时的ai，此处是最基础的3火开大ai"
         targets = self.enemy.alive_members()
         if targets:                
             if self.team.energe >= 3:
-                self.skill_3(targets)
+                self.skill_3(choice(targets))
             else:
-                self.skill_1(targets)
+                self.skill_1(choice(targets))
     
     def counter(self, target):
         "反击，默认用一技能反击"

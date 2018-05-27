@@ -61,7 +61,9 @@ class Battle:
                 if member.location >= self.run_bar:
                     self._ready.append(member)
 
-        if self.team1.is_alive():
+        if self.team1.alive_members():
             print("team1获胜")
         else:
             print("team2获胜")
+        for each in self.members:
+            print(each.recorder.get_result())

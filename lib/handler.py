@@ -18,6 +18,8 @@ class PreAction(Handler):
     def run(self):
         if not self.actor.is_alive():
             return
+        # 记录行动次数
+        self.actor.recorder.add_round()
         # 行动条重置为0
         self.actor.location = 0
         # 结算回合前触发的各种东西

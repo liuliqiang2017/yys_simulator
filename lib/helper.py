@@ -3,7 +3,6 @@
 不过当前只做和伤害有关的实现, 用观察者模式实现
 """
 from random import randint
-from passive import PassiveSkill
 from damage_ import NoteDamage
 
 class Linker:
@@ -21,6 +20,10 @@ class Linker:
             self._link.append(link)
         if self not in link._link:
             link._link.append(self)
+    
+    def link_cut(self, link):
+        self._link.remove(link)
+        link.link_cut(self)
     
     def add(self, target):
         self.target = target
@@ -50,7 +53,9 @@ class AssistAtk(Linker):
                 each.trigger_post_skill.remove(self)
     
     def action(self, damage):
-        if self.owner.is_alive() and damage.data_dict["name"] == "普通攻击" and randint(1, 1000) <= self.chance:
+        if all(self.owner.is_alive(),
+               damage.data_dict["name"] == "普通攻击",
+               randint(1, 1000) <= self.chance):
             self.owner.assist(damage.defer)
 
 # 荒的幻境协战
@@ -86,16 +91,15 @@ class TakeNotes(Linker):
         dm.set_defender(self.target)
         dm.set_base_val(self.dm_memo)
         dm.run()
+        self.remove()
 
-class Notebook(PassiveSkill):
+class Notebook(Linker):
     "书翁记仇的主体"
-    def config(self):
-        self._link = []
-        self.act_period = 11
     
     def action(self):
         for each in self._link:
             each.explode()
+            self._link.remove(each)
     
     
 # TODO 土蜘蛛的效果

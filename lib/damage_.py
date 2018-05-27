@@ -9,9 +9,10 @@ class Damage:
         self.atker = atker
         self.name = "默认攻击"
         self.factor = 1
-        self.counter = True
-        self.trigger = True
-        self.critical = False
+        self.passive = True # 是否触发自己被动
+        self.counter = True # 能否被反击
+        self.trigger = True # 能否触发对方被动御魂
+        self.critical = False # 是否暴击
         self.config()
     
     def config(self):
@@ -27,15 +28,19 @@ class Damage:
     
     def run(self):
         # 触发攻击前生效的御魂和被动
-        for each in self.atker.trigger_pre_skill:
-            each.action(self)
+        if self.passive:
+            for each in self.atker.trigger_pre_skill:
+                each.action(self)
         # 计算伤害
         self.val = self.calculate(self.data_dict)
         # 触发攻击后生效的御魂和被动
-        for each in self.atker.trigger_post_skill:
-            each.action(self)
+        if self.passive:
+            for each in self.atker.trigger_post_skill:
+                each.action(self)
         # 生效伤害
         self.defer.defend(self)
+        # 传递给攻击者的记录器
+        self.atker.recorder.add_damage(self)
 
     def _cri_check(self):
         if randint(1, 1000) <= self.data_dict["cri"] * 10:
@@ -60,10 +65,10 @@ class Counter_Damage(NormalDamage):
 
 # TODO 伤害结算方式
 class IndirectDamage(Damage):
-    "间接伤害，计算防，不触发被动"
+    "间接伤害，计算防，不触发双方被动"
     def config(self):
         self.name = "间接伤害"
-        self.counter = False
+        self.passive = False
         self.trigger = False
 
 class NoteDamage(IndirectDamage):

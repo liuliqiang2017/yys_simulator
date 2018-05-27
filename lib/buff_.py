@@ -7,11 +7,9 @@ buff提供如下方法：add:将生成的buff实例添加到target的buff_list�
 
 class baseBuff:
     "buff基类"
-    def __init__(self, caster, target):
+    def __init__(self, caster):
         super().__init__()
         self.caster = caster
-        self.target = target
-        self.position = target.status_buff
         self.config()
         
     def config(self):
@@ -19,14 +17,16 @@ class baseBuff:
         self.id = None
         self.layer = 1
 
-    def add(self):
+    def add(self, target):
+        self.target = target
+        self.position = target.status_buff
         same_buffs = [buff for buff in self.position if buff.id == self.id]
         if len(same_buffs) < self.coexist_num:
             self.position.append(self)
             self._valid()
         else:
             same_buffs[0].remove()
-            self.add()
+            self.add(target)
 
     def _valid(self):
         # 生效过程，由子类实现
@@ -51,9 +51,9 @@ class StatusBuff(baseBuff):
 
 class StatusDebuff(baseBuff):
     "减益buff"
-    def add(self):
+    def add(self, target):
         if not self.target.immune:
-            super().add()
+            super().add(target)
 
 class Xing(StatusBuff):
     "晴明星，ID 100"
