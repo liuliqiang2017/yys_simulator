@@ -3,15 +3,16 @@ from random import randint
 
 class Damage:
     "伤害基类"
-    def __init__(self, atk_dict):
+    def __init__(self, atker):
         super().__init__()
-        self.data_dict = atk_dict
-        self.atker = atk_dict["atker"]
-        self.name = atk_dict["name"]
-        self.config()
+        self.data_dict = atker.status.get_atk_data()
+        self.atker = atker
+        self.name = "默认攻击"
+        self.factor = 1
         self.counter = True
         self.trigger = True
         self.critical = False
+        self.config()
     
     def config(self):
         pass
@@ -24,21 +25,30 @@ class Damage:
         "计算伤害值，由子类实现不同的计算方法"
         raise NotImplementedError
     
-    def get_result(self):
+    def run(self):
+        # 触发攻击前生效的御魂和被动
+        for each in self.atker.trigger_pre_skill:
+            each.action(self)
+        # 计算伤害
         self.val = self.calculate(self.data_dict)
-        return self
+        # 触发攻击后生效的御魂和被动
+        for each in self.atker.trigger_post_skill:
+            each.action(self)
+        # 生效伤害
+        self.defer.defend(self)
 
     def _cri_check(self):
         if randint(1, 1000) <= self.data_dict["cri"] * 10:
             self.critical = True
-        return self.critical
+            return True
+        return False
 
 class NormalDamage(Damage):
     "正常伤害，计算防，触发被动等"
     
     def calculate(self, data_dict):
         criDM = data_dict["criDM"] if self._cri_check() else 100
-        atk_dm = data_dict["atk"] * criDM * 3 * data_dict["factor"] * data_dict["damage_ratio"] * data_dict["harm_ratio"]
+        atk_dm = data_dict["atk"] * criDM * 3 * self.factor * data_dict["damage_ratio"] * data_dict["harm_ratio"]
         def_dm = (data_dict["def"] + data_dict["extra_def"] - data_dict["def_break"]) * data_dict["def_reduce"] + 300
         dm = atk_dm / def_dm
         return round(dm)

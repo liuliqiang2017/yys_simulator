@@ -2,13 +2,13 @@
 import battle
 from servant import Servant
 from handler import NormalRound
-from passive import Needle
+from passive import Needle, BadThing
 
 def main():
-    atk_dict = {"hp":1000, "atk":200, "cri":100, "criDM":100, "speed":100, "def_":300, "yuhun":[Needle]}
+    atk_dict = {"hp":100000, "atk":2000, "cri":50, "criDM":300, "speed":100, "def_":300, "yuhun":[Needle, BadThing]}
     atker = Servant(atk_dict)
     atker.name = "老虎"
-    def_dict = {"hp":1000, "atk":100, "cri":100, "criDM":100, "speed":60, "def_":300, "yuhun":[]}
+    def_dict = {"hp":200000, "atk":1000, "cri":100, "criDM":100, "speed":60, "def_":300, "yuhun":[]}
     defer1 = Servant(def_dict)
     defer2 = Servant(def_dict)
     defer1.name = "狮子1"

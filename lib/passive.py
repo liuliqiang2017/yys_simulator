@@ -94,11 +94,10 @@ class Needle(YuHun):
     
     def action(self, damage):
         "破盾暴击有40%几率，由damage的攻击方向防守方造成一次真实伤害"
-        if  damage.critical and damage.val > damage.defer.shield and randint(1, 1000) <= 400:
-            needle_dm = damage_.NeedleDamage(damage.atker.get_atk_data())
+        if  damage.critical and damage.val > damage.defer.status.shield and randint(1, 1000) <= 400:
+            needle_dm = damage_.NeedleDamage(damage.atker)
             needle_dm.set_defender(damage.defer)
-            needle_dm.get_result()
-            damage.defer.defend(needle_dm)
+            needle_dm.run()
 
 class NetCut(YuHun):
     "网切"
@@ -117,7 +116,7 @@ class BadThing(YuHun):
     
     def action(self, damage):
         "对方血量超过70%，伤害增加40%"
-        if damage.defer.hp / damage.defer.max_hp >= 0.7:
+        if damage.defer.status.hp / damage.defer.status.max_hp >= 0.7:
             damage.val *= 1.4
 
 class LuckyCat(YuHun):

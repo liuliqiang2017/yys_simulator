@@ -117,13 +117,11 @@ class Servant:
     def skill_1(self, targets, cost=0):
         self.team.energe_change(-cost)
         target = choice(targets)
-        atk_dict = self.status.get_atk_data()
-        atk_dict["name"] = "普通攻击"
-        atk_dict["factor"] = 1.25
-        damage = NormalDamage(atk_dict)
+        damage = NormalDamage(self)
+        damage.name = "普通攻击"
+        damage.factor = 1.25
         damage.set_defender(target)
-        damage.get_result()
-        target.defend(damage)
+        damage.run()
     
     def skill_2(self, targets, cost=0):
         pass
@@ -131,13 +129,11 @@ class Servant:
     def skill_3(self, targets, cost=3):
         self.team.energe_change(-cost)
         target = choice(targets)
-        atk_dict = self.status.get_atk_data()
-        atk_dict["factor"] = 3
-        atk_dict["name"] = "暴跳如雷"
-        damage = NormalDamage(atk_dict)
+        damage = NormalDamage(self)
+        damage.name = "暴跳如雷"
+        damage.factor = 3
         damage.set_defender(target)
-        damage.get_result()
-        target.defend(damage)
+        damage.run()
     
     def ai_act(self):
         "自动战斗时的ai，此处是最基础的3火开大ai"
@@ -149,11 +145,8 @@ class Servant:
                 self.skill_1(targets)
         
     def defend(self, damage):
-        # TODO 受攻击前的被动触发判定
-        # TODO 被攻击时的被动触发判定
-        # 结算攻击效果
-        damage.set_defender(self)       
-        self.damage_apply(damage.get_result())
+        # 结算伤害
+        self.damage_apply(damage)
         # TODO 受攻击后的被动触发判定
     
     def damage_apply(self, damage):
