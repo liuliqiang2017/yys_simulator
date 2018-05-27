@@ -143,13 +143,16 @@ class Servant:
             else:
                 self.skill_1(targets)
     
-    def counter(self, targets):
+    def counter(self, target):
         "反击，默认用一技能反击"
-        self.skill_1(self, targets)
+        self.assist(target)
     
-    def assist(self, targets):
+    def assist(self, target):
         "协战，默认用一技能协战"
-        self.skill_1(self, targets)
+        if target.is_alive():
+            self.skill_1([target])
+        else:
+            self.skill_1(self.enemy.alive_members())
         
     def defend(self, damage):
         # 结算伤害
