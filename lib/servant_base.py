@@ -6,4 +6,5 @@ BOSS_DUMMY = {"base_atk" : 3000,
               "base_speed" : 120,
               "base_cri" : 50,
               "base_criDM" : 150,
+              "base_max_hp" : 20000000,
               "passive":[]}

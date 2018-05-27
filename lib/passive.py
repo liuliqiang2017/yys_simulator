@@ -33,9 +33,9 @@ class basePassive:
         if self.act_period == 11:
             owner.trigger_pre_round.append(self)
         elif self.act_period == 21:
-            owner.trigger_pre_atk.append(self)
+            owner.trigger_pre_skill.append(self)
         elif self.act_period == 23:
-            owner.trigger_post_atk.append(self)
+            owner.trigger_post_skill.append(self)
         elif self.act_period == 31:
             owner.trigger_post_round.append(self)
         elif self.act_period == 41:

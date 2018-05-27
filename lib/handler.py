@@ -16,21 +16,21 @@ class PreAction(Handler):
     "回合前"
 
     def run(self):
+        if not self.actor.is_alive():
+            return
         # 行动条重置为0
         self.actor.location = 0
-        # TODO 结算幻境类
-        # TODO 结算伤害类buff
-        # TODO 结算自身被动
-        for p_skill in self.actor.passive_skills:
-            if 10 < p_skill.act_period < 20:
-                p_skill.action() 
-        # TODO 判断是否能动，不能动跳过行动回合
+        # 结算回合前触发的各种东西
+        for each in self.actor.trigger_pre_round:
+            each.action()
 
 # TODO 回合中的过程
 class Acting(Handler):
     "回合中"
 
     def run(self):
+        if not self.actor.is_alive():
+            return
         # 选择技能，选择目标，使用技能
         self.actor.ai_act()
 
@@ -39,8 +39,16 @@ class Ending(Handler):
     "回合后"
 
     def run(self):
-        # 触发被动
-        pass
+        if not self.actor.is_alive():
+            return
+        # 结算回合后的触发效果
+        for each in self.actor.trigger_post_round:
+            each.action()
+        # 自身buff降一层
+        for each in self.actor.status_buff:
+            each.update_layer()
+        # 鬼火条推进一格
+        self.actor.team.energe_add()
 
 # 正常回合的过程
 class NormalRound(Handler):

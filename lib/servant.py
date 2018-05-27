@@ -1,14 +1,15 @@
 """
 式神相关类， 包括式神数据类Servant_Data, 式神技能类Servant_Skill, 伤害统计类Statistic， 式神基类
 """
+from random import choice
 import servant_base
+from damage_ import NormalDamage
 
 class Servant_Data:
     "式神数据基类，从给定的参数字典初始化式神的属性"
     def __init__(self, data_dict, owner):
         super().__init__()
         self.owner = owner
-        self.name = data_dict.get("name", "式神")
         self.max_hp = data_dict["hp"]
         self.hp = self.max_hp
         self.speed = data_dict["speed"]
@@ -26,7 +27,7 @@ class Servant_Data:
         self.base_speed = base_data["base_speed"]
         self.base_cri = base_data["base_cri"]
         self.base_criDM = base_data["base_criDM"]
-        self.base_max_hp = base_data["bace_max_hp"]
+        self.base_max_hp = base_data["base_max_hp"]
     
     def set_extra_status(self):
         "重置自身的附加属性"
@@ -36,12 +37,12 @@ class Servant_Data:
         self.extra_speed = 0
         self.extra_cri = 0
         self.extra_criDM = 0
-        self.atk_ratio = 1
-        self.def_ratio = 1
+        self.atk_ratio = 0
+        self.def_ratio = 0
         self.harm_ratio = 1
         self.damage_ratio = 1
-        self.max_hp_ratio = 1
-        self.speed_ratio = 1
+        self.max_hp_ratio = 0
+        self.speed_ratio = 0
         self.def_break = 0
         self.def_reduce = 1
 
@@ -63,9 +64,12 @@ class Servant_Data:
                     "def_reduce" : self.def_reduce,
                     "cri" : self.cri + self.extra_cri,
                     "criDM" : self.criDM + self.extra_criDM,
-                    "atiker" : self.owner
+                    "atker" : self.owner
                     }
         return atk_data
+    
+    def get_speed(self):
+        return self.speed + self.extra_speed
 
 # TODO 式神技能类Servant_Skill
 
@@ -78,6 +82,7 @@ class Servant:
     def __init__(self, data_dict):
         super().__init__()
         self.data_dict = data_dict
+        self.name = data_dict.get("name", "式神")
         self.status = Servant_Data(data_dict, self)
         self.location = self.status.speed
         self.immune = False
@@ -92,10 +97,10 @@ class Servant:
         self.trigger_by_hit = []
         self.config()
 
-    def config(self):
+    def config(self, base=servant_base.BOSS_DUMMY):
         "由子类实现不同的初始设置，以下是个例子"
         # 初始化式神的基础属性
-        self.status.set_base_data(servant_base.BOSS_DUMMY)
+        self.status.set_base_data(base)
         # 设置式神的御魂
         for yh in self.data_dict["yuhun"]:
             yh().add(self)
@@ -109,6 +114,52 @@ class Servant:
     def move(self, distance=None):
         self.location += distance if distance else self.status.speed + self.status.extra_speed
 
+    def skill_1(self, targets, cost=0):
+        self.team.energe_change(-cost)
+        target = choice(targets)
+        atk_dict = self.status.get_atk_data()
+        atk_dict["name"] = "普通攻击"
+        atk_dict["factor"] = 1.25
+        damage = NormalDamage(atk_dict)
+        damage.set_defender(target)
+        damage.get_result()
+        target.defend(damage)
+    
+    def skill_2(self, targets, cost=0):
+        pass
+    
+    def skill_3(self, targets, cost=3):
+        self.team.energe_change(-cost)
+        target = choice(targets)
+        atk_dict = self.status.get_atk_data()
+        atk_dict["factor"] = 3
+        atk_dict["name"] = "暴跳如雷"
+        damage = NormalDamage(atk_dict)
+        damage.set_defender(target)
+        damage.get_result()
+        target.defend(damage)
+    
+    def ai_act(self):
+        "自动战斗时的ai，此处是最基础的3火开大ai"
+        targets = self.enemy.alive_members()
+        if targets:                
+            if self.team.energe >= 3:
+                self.skill_3(targets)
+            else:
+                self.skill_1(targets)
+        
+    def defend(self, damage):
+        # TODO 受攻击前的被动触发判定
+        # TODO 被攻击时的被动触发判定
+        # 结算攻击效果
+        damage.set_defender(self)       
+        self.damage_apply(damage.get_result())
+        # TODO 受攻击后的被动触发判定
+    
+    def damage_apply(self, damage):
+        self.status.hp -= damage.val
+        print("{}对{}发动{}，造成{}伤害".format(damage.atker.name, damage.defer.name, damage.name, damage.val))
+        print("{}的剩余血量是{}".format(self.name, self.status.hp))
     
 
 
