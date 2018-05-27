@@ -81,7 +81,7 @@ class Mie(StatusDebuff):
     def _invalid(self):
         self.target.status.harm_ratio -= 0.3
 
-class SteelFeather(StatusBuff):
+class SteelMao(StatusBuff):
     "天狗的钢铁毛 ID 102"
     def config(self):
         self.coexist_num = 1

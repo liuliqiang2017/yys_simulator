@@ -48,6 +48,8 @@ class Battle:
         self.members = team1.members + team2.members
         self.members.sort(key=lambda x:x.status.get_speed(), reverse=True)
         self.run_bar = self.members[0].status.get_speed() * 30
+        for each in self.members:
+            each.config()
     
     def run(self):
         while self.team1.alive_members() and self.team2.alive_members():

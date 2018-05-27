@@ -48,7 +48,7 @@ class Ending(Handler):
             each.action()
         # 自身buff降一层
         for each in self.actor.status_buff:
-            each.update_layer()
+            each.layer_update()
         # 鬼火条推进一格
         self.actor.team.energe_walk()
 

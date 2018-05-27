@@ -42,8 +42,8 @@ class AssistAtk(Linker):
     def config(self):
         self.chance = 300
     
-    def add(self, owner=None):
-        for each in self.owner.team.members:
+    def add(self, target):
+        for each in target.team.members:
             if each is not self.owner:
                 each.trigger_post_skill.append(self)
 
@@ -53,9 +53,9 @@ class AssistAtk(Linker):
                 each.trigger_post_skill.remove(self)
     
     def action(self, damage):
-        if all(self.owner.is_alive(),
-               damage.data_dict["name"] == "普通攻击",
-               randint(1, 1000) <= self.chance):
+        if all([self.owner.is_alive(),
+               damage.name == "普通攻击",
+               randint(1, 1000) <= self.chance]):
             self.owner.assist(damage.defer)
 
 # 荒的幻境协战

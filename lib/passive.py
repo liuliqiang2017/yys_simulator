@@ -21,25 +21,26 @@ import damage_
 
 class basePassive:
     "被动效果基类"
-    def __init__(self):
+    def __init__(self, owner):
         super().__init__()
+        self.owner = owner
         self.config()
     
     def config(self):
         self.act_period = 0
     
-    def add(self, owner):
-        self.owner = owner
+    def add(self, target):
+        self.owner = target
         if self.act_period == 11:
-            owner.trigger_pre_round.append(self)
+            self.owner.trigger_pre_round.append(self)
         elif self.act_period == 21:
-            owner.trigger_pre_skill.append(self)
+            self.owner.trigger_pre_skill.append(self)
         elif self.act_period == 23:
-            owner.trigger_post_skill.append(self)
+            self.owner.trigger_post_skill.append(self)
         elif self.act_period == 31:
-            owner.trigger_post_round.append(self)
+            self.owner.trigger_post_round.append(self)
         elif self.act_period == 41:
-            owner.trigger_by_hit.append(self)
+            self.owner.trigger_by_hit.append(self)
         
     
     def action(self):
@@ -63,7 +64,7 @@ class SteelFeather(PassiveSkill):
     
     def action(self):
         "给owner加个buff"
-        buff_.SteelFeather(self.owner, self.owner).add()
+        buff_.SteelMao(self.owner).add(self.owner)
 
 class Curse(PassiveSkill):
     "丑女的诅咒"
@@ -73,7 +74,7 @@ class Curse(PassiveSkill):
     def action(self):
         "给对面随机人员上个buff"
         target = self.owner.enemy.random_member()
-        buff_.CurseFire(self.owner, target).add()
+        buff_.CurseFire(self.owner).add(target)
 
 class DrinkPostRound(PassiveSkill):
     "酒吞回合结束喝酒"

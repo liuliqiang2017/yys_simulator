@@ -4,7 +4,9 @@
 from collections import defaultdict
 from random import choice
 import servant_base
+import skill_
 from damage_ import NormalDamage
+
 
 class Servant_Data:
     "式神数据基类，从给定的参数字典初始化式神的属性"
@@ -74,6 +76,9 @@ class Servant_Data:
 
     def get_max_hp(self):
         return self.max_hp + self.base_max_hp * self.max_hp_ratio
+    
+    def get_hp_percent(self):
+        return self.hp / self.get_max_hp()
 
 # TODO 式神技能类Servant_Skill
 
@@ -104,7 +109,7 @@ class Servant:
     def __init__(self, data_dict):
         super().__init__()
         self.data_dict = data_dict
-        self.name = data_dict.get("name", "式神")
+        self.name = data_dict.get("name", "未命名")
         self.status = Servant_Data(data_dict, self)
         self.recorder = Statistic(self)
         self.location = self.status.speed
@@ -119,61 +124,38 @@ class Servant:
         self.trigger_pre_skill = []
         self.trigger_post_skill = []
         self.trigger_by_hit = []
-        self.config()
 
     def config(self, base=servant_base.BOSS_DUMMY):
         "由子类实现不同的初始设置，以下是个例子"
         # 初始化式神的基础属性
         self.status.set_base_data(base)
+        # 设置式神的技能
+        self.set_skills()
         # 设置式神的御魂
         for yh in self.data_dict["yuhun"]:
-            yh().add(self)
+            yh(self).add(self)
         # 设置式神的被动
         for passive_skill in base["passive"]:
-            passive_skill().add(self)
+            passive_skill(self).add(self)
         # 使用开场运行一次的技能
         for each in self.run_once:
             each.action()
+    
+    def set_skills(self):
+        self.skill_1 = skill_.ServantSkill1(self)
+        self.skill_3 = skill_.ServantSkill3(self)
     
     def is_alive(self):
         return self.status.hp > 0
     
     def move(self, distance=None):
         self.location += distance if distance else self.status.get_speed()
-
-    def skill_1(self, target, cost=0):
-        # 扣鬼火
-        self.team.energe_change(-cost)
-        # 输出伤害
-        damage = NormalDamage(self)
-        damage.name = "普通攻击"
-        damage.factor = 1.25
-        damage.set_defender(target)
-        damage.run()
-        # 记录输出,add_showtime的参数为动画时间
-        self.recorder.add_showtime(time=1)
-        self.recorder.add_skill(damage.name)
-    
-    def skill_2(self, targets, cost=0):
-        # 这三个技能都需要子类去分别重载
-        pass
-    
-    def skill_3(self, target, cost=3):
-        self.team.energe_change(-cost)
-        damage = NormalDamage(self)
-        damage.name = "暴跳如雷"
-        damage.factor = 3
-        damage.set_defender(target)
-        damage.run()
-        # 记录输出,add_showtime的参数为动画时间
-        self.recorder.add_showtime(time=3)
-        self.recorder.add_skill(damage.name)
     
     def ai_act(self):
         "自动战斗时的ai，此处是最基础的3火开大ai"
         targets = self.enemy.alive_members()
         if targets:                
-            if self.team.energe >= 3:
+            if self.team.energe >= self.skill_3.cost:
                 self.skill_3(choice(targets))
             else:
                 self.skill_1(choice(targets))
@@ -185,9 +167,10 @@ class Servant:
     def assist(self, target):
         "协战，默认用一技能协战"
         if target.is_alive():
-            self.skill_1([target])
+            self.skill_1(target)
         else:
-            self.skill_1(self.enemy.alive_members())
+            if self.enemy.alive_members():
+                self.skill_1(choice(self.enemy.alive_members()))
         
     def defend(self, damage):
         # 结算伤害
@@ -198,12 +181,43 @@ class Servant:
                 each.action(damage)
     
     def damage_apply(self, damage):
-        self.status.hp -= damage.val
-        print("{}对{}发动{}，造成{}伤害".format(damage.atker.name, damage.defer.name, damage.name, damage.val))
-        print("{}的剩余血量是{}".format(self.name, self.status.hp))
+        if damage.val > self.status.shield:
+            self.status.shield = 0
+            self.status.hp -= damage.val - self.status.shield
+        else:
+            self.status.shield -= damage.val
+
+# 第一个实验性的式神，大天狗
+class BigDog(Servant):
+    "大天狗"
+    def config(self):
+        super().config(servant_base.BigDog)
+
+    def set_skills(self):
+        self.skill_1 = skill_.BigDogSKill1(self)
+        self.skill_3 = skill_.BigDogSKill3(self)
+
+class Bird(Servant):
+    "姑获鸟"
+    def config(self):
+        super().config(servant_base.Bird)
     
+    def set_skills(self):
+        self.skill_1 = skill_.BirdSkill1(self)
+        self.skill_3 = skill_.BirdSkill3(self)
 
+class WineKing(Servant):
+    "酒吞"
+    def config(self):
+        self.wine = 0
+        super().config(servant_base.WineKing)
 
-
-
-
+    
+    def ai_act(self):
+        targets = self.enemy.alive_members()
+        if targets:
+            target = max(targets, key=lambda x:x.status.get_hp_percent())
+            self.skill_1(target)
+    
+    def set_skills(self):
+        self.skill_1 = skill_.WineKingSkill1(self)

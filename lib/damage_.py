@@ -9,6 +9,7 @@ class Damage:
         self.atker = atker
         self.name = "默认攻击"
         self.factor = 1
+        self.skill_id = 1 # 由哪个位置技能发动，以此判断是否能协战
         self.passive = True # 是否触发自己被动
         self.counter = True # 能否被反击
         self.trigger = True # 能否触发对方被动御魂
