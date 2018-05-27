@@ -5,7 +5,7 @@ from handler import NormalRound
 from passive import Needle, BadThing, LuckyCat
 
 def main():
-    atk_dict = {"hp":100000, "atk":8312, "cri":105, "criDM":197, "speed":135, "def_":523, "yuhun":[Needle]}
+    atk_dict = {"hp":100000, "atk":8312, "cri":105, "criDM":257, "speed":115, "def_":523, "yuhun":[Needle]}
     atker = WineKing(atk_dict)
     atk_dict1 = {"hp":100000, "atk":5812, "cri":105, "criDM":267, "speed":175, "def_":523, "yuhun":[Needle]}
     atker1 = Bird(atk_dict1)

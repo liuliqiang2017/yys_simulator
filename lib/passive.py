@@ -83,7 +83,7 @@ class DrinkPostRound(PassiveSkill):
     
     def action(self):
         "本大爷要喝一口酒"
-        if self.owner.wine < 5 and randint(1, 1000) <= 500:
+        if self.owner.wine < 4 and randint(1, 1000) <= 500:
             self.owner.wine += 1
 
 class DrinkByHit(PassiveSkill):
@@ -92,7 +92,7 @@ class DrinkByHit(PassiveSkill):
         self.act_period = 41
     
     def action(self, damage):
-        if randint(1, 1000) <= 250:
+        if self.owner.wine < 4 and randint(1, 1000) <= 250:
             self.owner.wine += 1
 
 # TODO 御魂：土蜘蛛。
