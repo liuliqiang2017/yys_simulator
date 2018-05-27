@@ -3,10 +3,13 @@
 不过当前只做和伤害有关的实现, 用观察者模式实现
 """
 from random import randint
+from passive import PassiveSkill
+from damage_ import NoteDamage
 
 class Linker:
     "联动器基类"
-    def __init__(self):
+    def __init__(self, owner):
+        self.owner = owner
         self._link = []
         self.config()
     
@@ -19,8 +22,7 @@ class Linker:
         if self not in link._link:
             link._link.append(self)
     
-    def add(self, *, owner=None, target=None):
-        self.owner = owner
+    def add(self, target):
         self.target = target
         self.position = eval(self.position)
         self.position.append(self)
@@ -37,8 +39,7 @@ class AssistAtk(Linker):
     def config(self):
         self.chance = 300
     
-    def add(self, *, owner=None, target=None):
-        self.owner = owner
+    def add(self, owner=None):
         for each in self.owner.team.members:
             if each is not self.owner:
                 each.trigger_post_skill.append(self)
@@ -73,7 +74,28 @@ class BirdAssist(AssistAtk):
 class TakeNotes(Linker):
     "书翁记仇的分体, 主体作为被动存在"
     def config(self):
+        self.dm_memo = 0
         self.position = "self.target.trigger_by_hit"
         self.link_to(self.owner.notebook)
+    
+    def action(self, damage):
+        self.dm_memo += damage.val
+    
+    def explode(self):
+        dm = NoteDamage(self.owner)
+        dm.set_defender(self.target)
+        dm.set_base_val(self.dm_memo)
+        dm.run()
+
+class Notebook(PassiveSkill):
+    "书翁记仇的主体"
+    def config(self):
+        self._link = []
+        self.act_period = 11
+    
+    def action(self):
+        for each in self._link:
+            each.explode()
+    
     
 # TODO 土蜘蛛的效果

@@ -71,6 +71,9 @@ class Servant_Data:
     def get_speed(self):
         return self.speed + self.extra_speed
 
+    def get_max_hp(self):
+        return self.max_hp + self.base_max_hp * self.max_hp_ratio
+
 # TODO 式神技能类Servant_Skill
 
 # TODO 伤害统计类Statistic
@@ -158,8 +161,9 @@ class Servant:
         # 结算伤害
         self.damage_apply(damage)
         # 受攻击后的被动触发判定
-        for each in self.trigger_by_hit:
-            each.action(damage)
+        if damage.trigger:
+            for each in self.trigger_by_hit:
+                each.action(damage)
     
     def damage_apply(self, damage):
         self.status.hp -= damage.val

@@ -66,6 +66,20 @@ class IndirectDamage(Damage):
         self.counter = False
         self.trigger = False
 
+class NoteDamage(IndirectDamage):
+    "书翁的记仇结算"
+
+    def set_base_val(self, val):
+        self.base_val = val
+    
+    def calculate(self, data_dict):
+        criDM = data_dict["criDM"] if self._cri_check() else 100
+        atk_dm = self.base_val * criDM * 3
+        def_dm = (data_dict["def"] + data_dict["extra_def"] - data_dict["def_break"]) * data_dict["def_reduce"] + 300
+        dm = round(atk_dm / def_dm)
+        max_dm = self.atker.status.get_max_hp() * 12
+        return min(dm, max_dm)
+
 class RealDamage(Damage):
     "真实伤害，不计算防，触发被动"
     pass
