@@ -8,9 +8,6 @@ class Team:
         self.members = []
         self.energe = 4
         self.energe_circle = 0
-        self.sword = 0
-        self.debuff = []
-        self.buff = []
         self.pet = None
     
     def add_member(self, member):
@@ -21,15 +18,10 @@ class Team:
         for member in self.members:
             member.enemy = team
     
-    def is_alive(self):
-        if self.alive_members():
-            return True
-        return False
-    
     def alive_members(self):
         return [member for member in self.members if member.is_alive()]
     
-    def energe_add(self, num=1):
+    def energe_walk(self, num=1):
         self.energe_circle += num
         if self.energe_circle >= 5:
             self.energe_circle -= 5
@@ -58,7 +50,7 @@ class Battle:
         self.run_bar = self.members[0].status.get_speed() * 30
     
     def run(self):
-        while self.team1.is_alive() and self.team2.is_alive():
+        while self.team1.alive_members() and self.team2.alive_members():
 
             while self._ready:
                 self._ready.sort(key=lambda x:x.status.get_speed())

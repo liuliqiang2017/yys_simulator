@@ -2,10 +2,10 @@
 import battle
 from servant import Servant
 from handler import NormalRound
-from passive import Needle, BadThing
+from passive import Needle, BadThing, LuckyCat
 
 def main():
-    atk_dict = {"hp":100000, "atk":2000, "cri":50, "criDM":300, "speed":100, "def_":300, "yuhun":[Needle, BadThing]}
+    atk_dict = {"hp":100000, "atk":2000, "cri":50, "criDM":300, "speed":100, "def_":300, "yuhun":[Needle, BadThing, LuckyCat]}
     atker = Servant(atk_dict)
     atker.name = "老虎"
     def_dict = {"hp":200000, "atk":1000, "cri":100, "criDM":100, "speed":60, "def_":300, "yuhun":[]}

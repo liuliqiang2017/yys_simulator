@@ -48,7 +48,7 @@ class Ending(Handler):
         for each in self.actor.status_buff:
             each.update_layer()
         # 鬼火条推进一格
-        self.actor.team.energe_add()
+        self.actor.team.energe_walk()
 
 # 正常回合的过程
 class NormalRound(Handler):

@@ -75,8 +75,6 @@ class Servant_Data:
 
 # TODO 伤害统计类Statistic
 
-# TODO 式神基类
-
 class Servant:
     "式神基类"
     def __init__(self, data_dict):
@@ -105,7 +103,7 @@ class Servant:
         for yh in self.data_dict["yuhun"]:
             yh().add(self)
         # 设置式神的被动
-        for passive_skill in servant_base.BOSS_DUMMY["passive"]:
+        for passive_skill in base["passive"]:
             passive_skill().add(self)
     
     def is_alive(self):
@@ -124,6 +122,7 @@ class Servant:
         damage.run()
     
     def skill_2(self, targets, cost=0):
+        # 这三个技能都需要子类去分别重载
         pass
     
     def skill_3(self, targets, cost=3):
@@ -143,11 +142,21 @@ class Servant:
                 self.skill_3(targets)
             else:
                 self.skill_1(targets)
+    
+    def counter(self, targets):
+        "反击，默认用一技能反击"
+        self.skill_1(self, targets)
+    
+    def assist(self, targets):
+        "协战，默认用一技能协战"
+        self.skill_1(self, targets)
         
     def defend(self, damage):
         # 结算伤害
         self.damage_apply(damage)
-        # TODO 受攻击后的被动触发判定
+        # 受攻击后的被动触发判定
+        for each in self.trigger_by_hit:
+            each.action(damage)
     
     def damage_apply(self, damage):
         self.status.hp -= damage.val

@@ -75,7 +75,7 @@ class Curse(PassiveSkill):
         target = self.owner.enemy.random_member()
         buff_.CurseFire(self.owner, target).add()
 
-class Drink(PassiveSkill):
+class DrinkPostRound(PassiveSkill):
     "酒吞回合结束喝酒"
     def config(self):
         self.act_period = 31
@@ -83,6 +83,15 @@ class Drink(PassiveSkill):
     def action(self):
         "本大爷要喝一口酒"
         if self.owner.wine < 5 and randint(1, 1000) <= 500:
+            self.owner.wine += 1
+
+class DrinkByHit(PassiveSkill):
+    "酒吞被打喝酒"
+    def config(self):
+        self.act_period = 41
+    
+    def action(self, damage):
+        if randint(1, 1000) <= 250:
             self.owner.wine += 1
 
 # TODO 御魂：土蜘蛛。
@@ -126,4 +135,5 @@ class LuckyCat(YuHun):
     
     def action(self):
         "回合开始概率回2火"
-        self.owner.team.energe_increase(2)
+        if randint(1, 1000) <= 500:
+            self.owner.team.energe_change(2)
