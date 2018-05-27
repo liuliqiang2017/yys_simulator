@@ -111,6 +111,7 @@ class WineKingSkill1(baseSKill):
         self.showtime = 1.2 + self.owner.wine * 0.5
     
     def action(self, target):
+        self.showtime = 1.2 + self.owner.wine * 0.5
         self.atk_one(target, 1.25)
         self.skill_id = 0
         for _ in range(self.owner.wine):

@@ -54,7 +54,7 @@ class AssistAtk(Linker):
     
     def action(self, damage):
         if all([self.owner.is_alive(),
-               damage.name == "普通攻击",
+               damage.skill_id == 1,
                randint(1, 1000) <= self.chance]):
             self.owner.assist(damage.defer)
 
