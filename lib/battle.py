@@ -8,7 +8,8 @@ class Team:
         self.members = []
         self.energe = 4
         self.energe_circle = 0
-        self.pet = None
+        self.pet = None # 召唤物位
+        self.center = None # 中位，也就是阴阳师/boss所在的位置
     
     def add_member(self, member):
         self.members.append(member)

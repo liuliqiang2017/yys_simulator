@@ -33,3 +33,11 @@ WineKing = {  "base_atk" : 3136,
               "base_criDM" : 150,
               "base_max_hp" : 11165,
               "passive":[passive.DrinkByHit, passive.DrinkPostRound]}
+
+LuSheng = {   "base_atk" : 3028,
+              "base_def" : 384,
+              "base_speed" : 113,
+              "base_cri" : 10,
+              "base_criDM" : 150,
+              "base_max_hp" : 11393,
+              "passive":[]}

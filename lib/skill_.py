@@ -1,5 +1,7 @@
 "技能相关模块"
 from damage_ import NormalDamage
+from buff_ import Fear
+from random import randint, choice
 
 #技能基类
 class baseSKill:
@@ -57,7 +59,7 @@ class ServantSkill3(baseSKill):
 class BigDogSKill1(baseSKill):
     "大狗一技能"
     def config(self):
-        self.name = "普通攻击"
+        self.name = "风袭"
         self.cost = 0
         self.factor = 1.2
         self.showtime = 1
@@ -77,7 +79,7 @@ class BigDogSKill3(baseSKill):
 class BirdSkill1(baseSKill):
     "姑获鸟的一技能"
     def config(self):
-        self.name = "普通攻击"
+        self.name = "伞剑"
         self.cost = 0
         self.showtime = 1.1
         self.factor = 0.8 * 1.2
@@ -106,7 +108,7 @@ class BirdSkill3(baseSKill):
 class WineKingSkill1(baseSKill):
     "酒吞1技能"
     def config(self):
-        self.name = "普通攻击"
+        self.name = "酒葫芦"
         self.cost = 0
         self.showtime = 1.2 + (self.owner.wine * 0.5)
     
@@ -117,3 +119,36 @@ class WineKingSkill1(baseSKill):
         for _ in range(self.owner.wine):
             self.atk_one(target, 1.25)
         self.skill_id = 1
+
+class LuShengSkill1(baseSKill):
+    "陆生1技能"
+    def config(self):
+        self.name = "弥弥切丸"
+        self.cost = 0
+        self.showtime = 1.5
+        self.factor = 0.8 * 1.15
+    
+    def action(self, target):
+        if randint(1, 1000) <= 250:
+            assist_members = self.owner.team.alive_members()
+            assist_members.remove(self.owner)
+            for _ in range(randint(1,2)):
+                if assist_members:
+                    member = choice(assist_members)
+                    assist_members.remove(member)
+                    member.assist(target)
+        
+        super().action(target)
+
+class LuShengSkill3(baseSKill):
+    "陆生3技能"
+    def config(self):
+        self.name = "百鬼夜行"
+        self.cost = 3
+        self.showtime = 1.5
+        self.factor = 1.2 * 1.2
+
+    def action(self, target):
+        Fear(self.owner).add(self.owner)
+        super().action(target)
+

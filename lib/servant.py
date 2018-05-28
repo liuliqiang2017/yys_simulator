@@ -175,6 +175,8 @@ class Servant:
     def defend(self, damage):
         # 结算伤害
         self.damage_apply(damage)
+        # 输出伤害信息，方便测试
+        print("{}使用{}对{}造成{}伤害".format(damage.atker.name, damage.name, damage.defer.name, damage.val))
         # 受攻击后的被动触发判定
         if damage.trigger:
             for each in self.trigger_by_hit:
@@ -221,3 +223,18 @@ class WineKing(Servant):
     
     def set_skills(self):
         self.skill_1 = skill_.WineKingSkill1(self)
+    
+    def assist(self, target):
+        temp = self.wine
+        self.wine = 0
+        super().assist(target)
+        self.wine = temp
+
+class LuSheng(Servant):
+    "陆生"
+    def config(self):
+        super().config(servant_base.LuSheng)
+    
+    def set_skills(self):
+        self.skill_1 = skill_.LuShengSkill1(self)
+        self.skill_3 = skill_.LuShengSkill3(self)
