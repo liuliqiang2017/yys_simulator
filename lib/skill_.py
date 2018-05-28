@@ -3,6 +3,7 @@ from damage_ import NormalDamage
 from buff_ import Fear
 from random import randint, choice
 from helper import TakeNotes
+import pet_
 
 #技能基类
 class baseSKill:
@@ -257,4 +258,24 @@ class ShuWengSkill3(baseSKill):
         note.add(target)
         note.link_to(self.owner.notebook)
         self.atk_one(target, self.factor)
+
+class UglyGirlSkill1(baseSKill):
+    "丑女一技能"
+    def config(self):
+        self.name = "咒锥"
+        self.cost = 0
+        self.factor = 1.25
+        self.showtime = 1.8
+
+class UglyGirlSkill3(baseSKill):
+    "丑女三技能"
+    def config(self):
+        self.name = "草人替身"
+        self.cost = 2
+        self.factor = 1
+        self.showtime = 3
+    
+    def action(self, target):
+        pet = pet_.Scarecrow(self.owner, target)
+        pet.config()
 

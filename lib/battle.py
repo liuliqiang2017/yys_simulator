@@ -15,6 +15,11 @@ class Team:
         self.members.append(member)
         member.team = self
     
+    def remove_member(self, member):
+        if member in self.members:
+            member.team = None
+            self.members.remove(member)
+    
     def add_enemy(self, team):
         for member in self.members:
             member.enemy = team
@@ -32,6 +37,16 @@ class Team:
     
     def energe_change(self, num):
         self.energe += num
+    
+    def add_pet(self, pet):
+        if self.pet is None:
+            self.pet = pet
+            self.add_member(pet)
+    
+    def remove_pet(self, pet):
+        if self.pet is pet:
+            self.pet = None
+            self.remove_member(pet)
 
 class Battle:
     "战斗类"
@@ -59,7 +74,7 @@ class Battle:
                 self._ready.sort(key=lambda x:x.status.get_speed())
                 NormalRound(self._ready.pop()).run()
 
-            for member in self.members:
+            for member in self.team1.members + self.team2.members:
                 member.move()
                 if member.location >= self.run_bar:
                     self._ready.append(member)

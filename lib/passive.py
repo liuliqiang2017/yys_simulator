@@ -149,3 +149,28 @@ class LuckyCat(YuHun):
         "回合开始概率回2火"
         if randint(1, 1000) <= 500:
             self.owner.team.energe_change(2)
+
+class Transit(basePassive):
+    "草人传递伤害"
+    def config(self):
+        self.act_period = 41
+    
+    def action(self, damage):
+        dm = damage_.RealDamage(self.owner.owner)
+        dm.name = "草人传递"
+        dm.set_base_val(damage.val)
+        dm.set_defender(self.owner.target)
+        dm.run()
+        # 传递完判定owner以及target是否死亡, 任意一方死亡则删除草人
+        if not (self.owner.is_alive() and self.owner.target.is_alive()):
+            self.owner.remove()
+
+class CheakRound(basePassive):
+    "草人回合检测"
+    def config(self):
+        self.act_period = 31
+    
+    def action(self):
+        self.owner.round_num -= 1
+        if self.owner.round_num <= 0:
+            self.owner.remove()

@@ -107,5 +107,4 @@ class Notebook(Linker):
             each.explode()
             self.link_cut(each)
     
-    
 # TODO 土蜘蛛的效果

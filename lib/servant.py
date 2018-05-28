@@ -272,4 +272,12 @@ class ShuWeng(Servant):
 
 class UglyGirl(Servant):
     "丑女"
-    pass
+    def config(self):
+        super().config(servant_base.UglyGirl)
+
+    def set_skills(self):
+        self.skill_1 = skill_.UglyGirlSkill1(self)
+        self.skill_3 = skill_.UglyGirlSkill3(self)
+    
+
+

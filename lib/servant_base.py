@@ -57,3 +57,19 @@ ShuWeng = {   "base_atk" : 2680,
               "base_criDM" : 150,
               "base_max_hp" : 11393,
               "passive":[helper.Notebook]}
+
+Scarecrow = { "base_atk" : 0,
+              "base_def" : 0,
+              "base_speed" : 0,
+              "base_cri" : 0,
+              "base_criDM" : 0,
+              "base_max_hp" : 0,
+              "passive":[passive.Transit, passive.CheakRound]}
+
+UglyGirl = {  "base_atk" : 1741,
+              "base_def" : 306,
+              "base_speed" : 117,
+              "base_cri" : 10,
+              "base_criDM" : 150,
+              "base_max_hp" : 7963,
+              "passive":[passive.Curse]}
