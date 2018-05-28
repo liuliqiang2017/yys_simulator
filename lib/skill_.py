@@ -2,6 +2,7 @@
 from damage_ import NormalDamage
 from buff_ import Fear
 from random import randint, choice
+from helper import TakeNotes
 
 #技能基类
 class baseSKill:
@@ -223,4 +224,37 @@ class YuZaoQianSkill3Combo(YuZaoQianSkill3):
     def config(self):
         super().config()
         self.combo = False
+
+
+class ShuWengSkill1(baseSKill):
+    "书翁一技能"
+    def config(self):
+        self.name = "墨染"
+        self.cost = 0
+        self.factor = 1.25
+        self.showtime = 1.2
+
+class ShuWengSkill3(baseSKill):
+    "书翁三技能"
+    def config(self):
+        self.name = "万象之书"
+        self.cost = 2
+        self.factor = 0.8
+        self.showtime = 2.3
+    
+    def action(self, target):
+        # 诅咒第一个目标
+        self.note_one(target)
+        # 第二个血少的目标
+        others = target.team.alive_members()
+        if others:
+            others.remove(target)
+        if others:
+            self.note_one(min(others, key=lambda x: x.status.get_hp_percent()))
+    
+    def note_one(self, target):
+        note = TakeNotes(self.owner)
+        note.add(target)
+        note.link_to(self.owner.notebook)
+        self.atk_one(target, self.factor)
 

@@ -22,8 +22,10 @@ class Linker:
             link._link.append(self)
     
     def link_cut(self, link):
-        self._link.remove(link)
-        link.link_cut(self)
+        if link in self._link:
+            self._link.remove(link)
+        if self in link._link:
+            link._link.remove(self)
     
     def add(self, target):
         self.target = target
@@ -88,6 +90,7 @@ class TakeNotes(Linker):
     
     def explode(self):
         dm = NoteDamage(self.owner)
+        dm.name = "死亡笔记"
         dm.set_defender(self.target)
         dm.set_base_val(self.dm_memo)
         dm.run()
@@ -95,11 +98,14 @@ class TakeNotes(Linker):
 
 class Notebook(Linker):
     "书翁记仇的主体"
+    def add(self, target):
+        super().add(target)
+        self.owner.notebook = self
     
     def action(self):
-        for each in self._link:
+        for each in self._link[:]:
             each.explode()
-            self._link.remove(each)
+            self.link_cut(each)
     
     
 # TODO 土蜘蛛的效果

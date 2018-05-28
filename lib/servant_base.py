@@ -49,3 +49,11 @@ YuZaoQian = { "base_atk" : 3350,
               "base_criDM" : 160,
               "base_max_hp" : 12532,
               "passive":[]}
+
+ShuWeng = {   "base_atk" : 2680,
+              "base_def" : 441,
+              "base_speed" : 109,
+              "base_cri" : 8,
+              "base_criDM" : 150,
+              "base_max_hp" : 11393,
+              "passive":[helper.Notebook]}

@@ -188,7 +188,6 @@ class Servant:
         else:
             self.status.shield -= damage.val
 
-# 第一个实验性的式神，大天狗
 class BigDog(Servant):
     "大天狗"
     def config(self):
@@ -261,3 +260,16 @@ class YuZaoQian(Servant):
         self.skill_3 = skill_.YuZaoQianSkill3(self)
         self.skill_2_combo = skill_.YuZaoQianSkill2Combo(self)
         self.skill_3_combo = skill_.YuZaoQianSkill3Combo(self)
+
+class ShuWeng(Servant):
+    "书翁"
+    def config(self):
+        super().config(servant_base.ShuWeng)
+    
+    def set_skills(self):
+        self.skill_1 = skill_.ShuWengSkill1(self)
+        self.skill_3 = skill_.ShuWengSkill3(self)
+
+class UglyGirl(Servant):
+    "丑女"
+    pass

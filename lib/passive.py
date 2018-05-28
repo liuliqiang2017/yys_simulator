@@ -17,11 +17,12 @@ action: 触发过程
 from random import randint
 import buff_
 import damage_
+from plugin import sington
 
 
 class basePassive:
     "被动效果基类"
-    def __init__(self, owner):
+    def __init__(self, owner=None):
         super().__init__()
         self.owner = owner
         self.config()
@@ -96,7 +97,7 @@ class DrinkByHit(PassiveSkill):
             self.owner.wine += 1
 
 # TODO 御魂：土蜘蛛。
-
+@sington
 class Needle(YuHun):
     "针女"
     def config(self):
@@ -108,7 +109,7 @@ class Needle(YuHun):
             needle_dm = damage_.NeedleDamage(damage.atker)
             needle_dm.set_defender(damage.defer)
             needle_dm.run()
-
+@sington
 class NetCut(YuHun):
     "网切"
     def config(self):
@@ -118,7 +119,7 @@ class NetCut(YuHun):
         "50%几率降低对方45%的防御"
         if randint(1, 1000) <= 500:
             damage.data_dict["def_reduce"] *= 0.55
-
+@sington
 class BadThing(YuHun):
     "破势"
     def config(self):
@@ -126,8 +127,18 @@ class BadThing(YuHun):
     
     def action(self, damage):
         "对方血量超过70%，伤害增加40%"
-        if damage.defer.status.hp / damage.defer.status.max_hp >= 0.7:
+        if damage.defer.status.get_hp_percent() >= 0.7:
             damage.val *= 1.4
+@sington
+class HeartEye(YuHun):
+    "心眼"
+    def config(self):
+        self.act_period = 23
+
+    def action(self, damage):
+        "对方血量低于30%， 伤害增加50%"
+        if damage.defer.status.get_hp_percent() <= 0.3:
+            damage.val *= 1.5
 
 class LuckyCat(YuHun):
     "招财猫"

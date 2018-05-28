@@ -88,11 +88,37 @@ class NoteDamage(IndirectDamage):
 
 class RealDamage(Damage):
     "真实伤害，不计算防，触发被动"
-    pass
+
+
+    def config(self):
+        self.name = "真实伤害"
+        self.passive = False
+        import passive
+        self.check = [passive.BadThing(), passive.HeartEye()]
+    
+
+    def set_base_val(self, val):
+        self.base_val = val
+    
+    def run(self):
+        self.val = self.calculate(self.data_dict)
+        # 触发攻击后生效的御魂和被动
+        for each in self.atker.trigger_post_skill:
+            if each in self.check:
+                each.action(self)
+        # 生效伤害
+        self.defer.defend(self)
+        # 传递给攻击者的记录器
+        self.atker.recorder.add_damage(self)
+    
+    def calculate(self, data_dict):
+        return self.base_val
+
 
 class NeedleDamage(RealDamage):
     "针女伤害，真实伤害的一种"
     def config(self):
+        super().config()
         self.name = "针女"
 
     def calculate(self, data_dict):
