@@ -20,7 +20,6 @@ class Servant_Data:
         self.def_ = data_dict["def_"]
         self.cri = data_dict["cri"]
         self.criDM = data_dict["criDM"]
-
         self.set_extra_status()
 
     def set_base_data(self, base_data):
@@ -238,3 +237,27 @@ class LuSheng(Servant):
     def set_skills(self):
         self.skill_1 = skill_.LuShengSkill1(self)
         self.skill_3 = skill_.LuShengSkill3(self)
+
+class YuZaoQian(Servant):
+    "玉藻前"
+    def config(self):
+        super().config(servant_base.YuZaoQian)
+        self.status.def_break = 100
+
+    def ai_act(self):
+        targets = self.enemy.alive_members()
+        if targets:                
+            if self.team.energe >= self.skill_3.cost:
+                if len(targets) > 1:
+                    self.skill_3(choice(targets))
+                else:
+                    self.skill_2(targets[0])
+            else:
+                self.skill_1(choice(targets))
+    
+    def set_skills(self):
+        self.skill_1 = skill_.YuZaoQianSkill1(self)
+        self.skill_2 = skill_.YuZaoQianSkill2(self)
+        self.skill_3 = skill_.YuZaoQianSkill3(self)
+        self.skill_2_combo = skill_.YuZaoQianSkill2Combo(self)
+        self.skill_3_combo = skill_.YuZaoQianSkill3Combo(self)

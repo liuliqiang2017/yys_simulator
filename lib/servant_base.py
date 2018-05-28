@@ -41,3 +41,11 @@ LuSheng = {   "base_atk" : 3028,
               "base_criDM" : 150,
               "base_max_hp" : 11393,
               "passive":[]}
+
+YuZaoQian = { "base_atk" : 3350,
+              "base_def" : 353,
+              "base_speed" : 110,
+              "base_cri" : 12,
+              "base_criDM" : 160,
+              "base_max_hp" : 12532,
+              "passive":[]}

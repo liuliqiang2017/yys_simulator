@@ -1,16 +1,16 @@
 "测试模块"
 import battle
-from servant import Servant, BigDog, Bird, LuSheng
+from servant import Servant, BigDog, Bird, LuSheng, YuZaoQian
 from handler import NormalRound
 from passive import Needle, BadThing, LuckyCat, NetCut
 
 def main():
-    atk_dict = {"hp":100000, "atk":8312, "cri":105, "criDM":257, "speed":135, "def_":523, "yuhun":[Needle], "name": "陆生"}
+    atk_dict = {"hp":100000, "atk":8312, "cri":105, "criDM":257, "speed":135, "def_":523, "yuhun":[NetCut], "name": "陆生"}
     atker = LuSheng(atk_dict)
     atk_dict1 = {"hp":100000, "atk":8812, "cri":105, "criDM":227, "speed":128, "def_":523, "yuhun":[Needle], "name": "姑获鸟"}
     atker1 = Bird(atk_dict1)
-    atk_dict2 = {"hp":100000, "atk":8812, "cri":105, "criDM":227, "speed":125, "def_":523, "yuhun":[Needle], "name": "大天狗"}
-    atker2 = BigDog(atk_dict2)
+    atk_dict2 = {"hp":100000, "atk":8812, "cri":105, "criDM":227, "speed":125, "def_":523, "yuhun":[BadThing], "name": "玉藻前"}
+    atker2 = YuZaoQian(atk_dict2)
     def_dict = {"hp":400000, "atk":1000, "cri":100, "criDM":100, "speed":110, "def_":300, "yuhun":[]}
     defer1 = Servant(def_dict)
     defer2 = Servant(def_dict)

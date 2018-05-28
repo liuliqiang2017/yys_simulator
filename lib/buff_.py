@@ -11,16 +11,22 @@ class baseBuff:
         super().__init__()
         self.caster = caster
         self.config()
+    
+    def __repr__(self):
+        return "{}{}".format(self.__class__, self.layer)
+    
+    def __eq__(self, obj):
+        return isinstance(obj, type(self)) and self.caster == obj.caster
         
     def config(self):
-        self.coexist_num = 1
+        self.coexist_num = 100
         self.id = None
         self.layer = 1
 
     def add(self, target):
         self.target = target
         self.position = target.status_buff
-        same_buffs = [buff for buff in self.position if buff.id == self.id]
+        same_buffs = [buff for buff in self.position if buff == self]
         if len(same_buffs) < self.coexist_num:
             self.position.append(self)
             self._valid()

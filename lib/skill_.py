@@ -152,3 +152,75 @@ class LuShengSkill3(baseSKill):
         Fear(self.owner).add(self.owner)
         super().action(target)
 
+
+class YuZaoQianSkill1(baseSKill):
+    "玉藻前1技能"
+    def config(self):
+        self.name = "灵击"
+        self.cost = 0
+        self.factor = 1.25
+        self.showtime = 1.3
+    
+class YuZaoQianSkill2(baseSKill):
+    "玉藻前2技能"
+    def config(self):
+        self.name = "狐火"
+        self.cost = 3
+        self.factor = 2.63 * 1.1
+        self.showtime = 1.9
+        self.combo = True
+    
+    def action(self, target):
+        marker = target.status.get_hp_percent()
+        if marker > 0.8:
+            factor = self.factor * 0.85
+        elif marker < 0.5:
+            factor = self.factor * 1.15
+        else:
+            factor = self.factor
+        self.atk_one(target, factor)
+        if self.combo and not target.is_alive():
+            self.owner.skill_3_combo(target)
+
+class YuZaoQianSkill2Combo(YuZaoQianSkill2):
+    "玉藻前连击时的二技能"
+    def config(self):
+        super().config()
+        self.cost = 0
+        self.showtime = 1.3
+        self.combo = False
+    
+    def action(self, target):
+        target = min(target.team.alive_members(), key=lambda x: x.status.get_hp_precent())
+        super().action(target)
+
+class YuZaoQianSkill3(baseSKill):
+    "玉藻前三技能"
+    def config(self):
+        self.cost = 3
+        self.name = "堕天"
+        self.factor = 1.31 * 1.1
+        self.showtime = 2.05
+        self.combo = True
+    
+    def action(self, target):
+        targets = target.team.alive_members()
+        for each in targets:
+            self.atk_one(each, self.factor)
+        if self.combo and any(not x.is_alive for x in targets):
+            self.owner.skill_2_combo(target)
+    
+    def atk_one(self, target, factor):
+        marker = target.status.get_hp_percent()
+        if marker > 0.8:
+            factor = factor * 1.15
+        elif marker < 0.5:
+            factor = factor * 0.85
+        super().atk_one(target, factor)
+
+class YuZaoQianSkill3Combo(YuZaoQianSkill3):
+    "玉藻前连击用三技能"
+    def config(self):
+        super().config()
+        self.combo = False
+
