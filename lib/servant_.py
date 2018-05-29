@@ -73,6 +73,13 @@ class ServantData:
                     }
         return atk_data
     
+    def hp_change(self, num):
+        self.hp += num
+        if self.hp < 0:
+            self.hp = 0
+        elif self.hp > self.get_max_hp():
+            self.hp = self.get_max_hp()
+    
     def get_speed(self):
         return self.speed + self.extra_speed
 
@@ -248,7 +255,7 @@ class Servant:
     def damage_apply(self, damage):
         if damage.val > self.status.shield:
             self.status.shield = 0
-            self.status.hp -= damage.val - self.status.shield
+            self.status.hp_change(self.status.shield - damage.val)
         else:
             self.status.shield -= damage.val
 

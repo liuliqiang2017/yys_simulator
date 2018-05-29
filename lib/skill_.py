@@ -305,4 +305,4 @@ class PeachSkill3(baseSKill):
 
     def pull_one(self, target):
         target.move(self.distance)
-        target.status.hp += self.owner.status.get_max_hp() * 0.1
+        target.status.hp_change(self.owner.status.get_max_hp() * 0.1)
