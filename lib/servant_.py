@@ -367,6 +367,10 @@ class Peach(Servant):
 
 class QingMing(Servant):
     "晴明"
+    def __init__(self):
+        data = {"hp":27140, "atk":6382, "cri":0, "criDM":150, "speed":128, "def_":1051, "yuhun":[], "name": "晴明"}
+        super().__init__(data)
+
     def config(self):
         super().config(servant_base.QingMing)
     

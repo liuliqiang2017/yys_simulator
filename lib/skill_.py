@@ -27,9 +27,14 @@ class baseSKill:
         # 技能的实际过程
         self.action(target)
         # 记录本次输出
+        self.record()
+        
+    
+    def record(self):
         self.owner.recorder.add_showtime(time=self.showtime)
         self.owner.recorder.add_skill(self.name)
-    
+        self.owner.team.arena.add_showtime(time=self.showtime)
+
     def action(self, target):
         "技能的过程，由子类重载"
         self.atk_one(target, self.factor)

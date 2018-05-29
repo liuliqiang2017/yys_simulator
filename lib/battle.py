@@ -24,6 +24,9 @@ class Team:
         for member in self.members:
             member.enemy = team
     
+    def set_arena(self, arena):
+        self.arena = arena
+    
     def alive_members(self):
         return [member for member in self.members if member.is_alive()]
 
@@ -62,24 +65,27 @@ class Battle:
     def __init__(self):
         super().__init__()
         self.run_bar = None
-        self._alive = True
+        self.timer = 0
         self._ready = []
     
     def add(self, team1, team2):
         team1.add_enemy(team2)
         team2.add_enemy(team1)
         self.team1 = team1
-        self.team1.arena = self
+        self.team1.set_arena(self)
         self.team2 = team2
-        self.team1.arena = self
+        self.team2.set_arena(self)
         self.members = team1.members + team2.members
         self.members.sort(key=lambda x:x.status.get_speed(), reverse=True)
         self.run_bar = self.members[0].status.get_speed() * 30
         for each in self.members:
             each.config()
     
-    def run(self):
-        while self.team1.alive_members() and self.team2.alive_members():
+    def add_showtime(self, time):
+        self.timer += time
+    
+    def run(self, time=360000):
+        while self.timer < time and self.team1.alive_members() and self.team2.alive_members():
 
             while self._ready:
                 self._ready.sort(key=lambda x:x.status.get_speed())
@@ -93,10 +99,11 @@ class Battle:
                     if member.location >= self.run_bar:
                         self._ready.append(member)
 
-        if self.team1.alive_members():
-            print("team1获胜")
-        else:
-            print("team2获胜")
+        if self.timer < time:
+            if self.team1.alive_members():
+                print("team1获胜")
+            else:
+                print("team2获胜")
         for each in self.members:
             print(each.recorder.get_result())
 
