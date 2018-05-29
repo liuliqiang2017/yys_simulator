@@ -112,6 +112,7 @@ class Servant:
         self.status = Servant_Data(data_dict, self)
         self.recorder = Statistic(self)
         self.location = self.status.speed
+        self.classify = "式神"
         self.immune = False
         self.team = None
         self.enemy = None
@@ -283,6 +284,7 @@ class UglyGirl(Servant):
 # 召唤物等
 class basePet(Servant):
     "宠物类基类"
+
     def create(self):
         raise NotImplementedError
 
@@ -309,6 +311,7 @@ class Scarecrow(basePet):
     
     def config(self):
         super().config(servant_base.Scarecrow)
+        self.classify = "召唤物"
         self.create()
     
     def ai_act(self):

@@ -141,11 +141,8 @@ class Ending(Handler):
         for each in self.actor.status_buff:
             each.layer_update()
         # 鬼火条推进一格
-        try:
-            if self.actor is not self.actor.team.pet:
-                 self.actor.team.energe_walk()
-        except AttributeError:
-            print("错误引发者", self.actor)
+        if self.actor.classify != "召唤物":
+            self.actor.team.energe_walk()
                
 
 # 正常回合的过程

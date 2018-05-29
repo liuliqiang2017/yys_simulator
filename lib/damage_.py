@@ -70,7 +70,7 @@ class IndirectDamage(Damage):
     def config(self):
         self.name = "间接伤害"
         self.passive = False
-        self.trigger = False
+        self.trigger = True
 
 class NoteDamage(IndirectDamage):
     "书翁的记仇结算"

@@ -249,7 +249,7 @@ class ShuWengSkill3(baseSKill):
         self.note_one(target)
         # 第二个血少的目标
         others = target.team.alive_members()
-        if others:
+        if target.is_alive():
             others.remove(target)
         if others:
             self.note_one(min(others, key=lambda x: x.status.get_hp_percent()))
