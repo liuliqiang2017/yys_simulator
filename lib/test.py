@@ -1,7 +1,6 @@
 "测试模块"
 import battle
 import servant
-from handler import NormalRound
 from passive import Needle, BadThing, LuckyCat, NetCut
 
 def main():
@@ -9,8 +8,8 @@ def main():
     atker = servant.ShuWeng(atk_dict)
     atk_dict1 = {"hp":100000, "atk":8812, "cri":105, "criDM":227, "speed":128, "def_":523, "yuhun":[Needle, BadThing], "name": "姑获鸟"}
     atker1 = servant.Bird(atk_dict1)
-    atk_dict2 = {"hp":100000, "atk":8812, "cri":105, "criDM":227, "speed":125, "def_":523, "yuhun":[BadThing], "name": "玉藻前"}
-    atker2 = servant.YuZaoQian(atk_dict2)
+    atk_dict2 = {"hp":100000, "atk":8812, "cri":105, "criDM":227, "speed":145, "def_":523, "yuhun":[BadThing], "name": "丑女"}
+    atker2 = servant.UglyGirl(atk_dict2)
     def_dict = {"hp":400000, "atk":1000, "cri":100, "criDM":100, "speed":110, "def_":300, "yuhun":[]}
     defer1 = servant.Servant(def_dict)
     defer2 = servant.Servant(def_dict)

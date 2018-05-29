@@ -14,10 +14,22 @@ act_period：触发时间，数值分为1X,2X, 3X，4X 方便扩展分别如下
 注：觉醒带来的效果直接写入基础属性里，不单独作为被动技能实现。有些被动完全和技能挂钩的直接写在技能里，也不单独实现
 action: 触发过程
 """
+from functools import wraps
 from random import randint
 import buff_
 import damage_
-from plugin import sington
+
+# 一个单例装饰器
+def sington(cls):
+    "单例模式"
+    if "_instance" not in cls.__dict__:
+        cls._instance = None
+    @wraps(cls)
+    def wrapper(*args, **kwargs):
+        if cls._instance is None:
+            cls._instance = cls(*args, **kwargs)       
+        return cls._instance
+    return wrapper
 
 
 class basePassive:
@@ -174,3 +186,109 @@ class CheakRound(basePassive):
         self.owner.round_num -= 1
         if self.owner.round_num <= 0:
             self.owner.remove()
+
+# 以下是helper的一些东西
+
+class Linker:
+    "联动器基类"
+    def __init__(self, owner):
+        self.owner = owner
+        self._link = []
+        self.config()
+    
+    def config(self):
+        self.position = "self.target.trigger_pre_round"
+    
+    def link_to(self, link):
+        if link not in self._link:
+            self._link.append(link)
+        if self not in link._link:
+            link._link.append(self)
+    
+    def link_cut(self, link):
+        if link in self._link:
+            self._link.remove(link)
+        if self in link._link:
+            link._link.remove(self)
+    
+    def add(self, target):
+        self.target = target
+        self.position = eval(self.position)
+        self.position.append(self)
+    
+    def remove(self):
+        self.position.remove(self)
+    
+    def action(self):
+        raise NotImplementedError
+
+
+class AssistAtk(Linker):
+    "协战, 把观察者放在每个其他友方式神的触发里"
+    def config(self):
+        self.chance = 300
+    
+    def add(self, target):
+        for each in target.team.members:
+            if each is not self.owner:
+                each.trigger_post_skill.append(self)
+
+    def remove(self):
+        for each in self.owner.team.members:
+            if each is not self.owner:
+                each.trigger_post_skill.remove(self)
+    
+    def action(self, damage):
+        if all([self.owner.is_alive(),
+               damage.skill_id == 1,
+               randint(1, 1000) <= self.chance]):
+            self.owner.assist(damage.defer)
+
+# 荒的幻境协战
+class HuangAssist(AssistAtk):
+    "荒的协战"
+    def config(self):
+        self.chance = 500
+    
+    def action(self, damage):
+        if self.owner.aura:
+            super().action(damage)
+
+
+# 鸟的协战
+class BirdAssist(AssistAtk):
+    "鸟的协战"
+    def config(self):
+        self.chance = 300
+
+# 书翁记仇。
+class TakeNotes(Linker):
+    "书翁记仇的分体, 主体作为被动存在"
+    def config(self):
+        self.dm_memo = 0
+        self.position = "self.target.trigger_by_hit"
+        self.link_to(self.owner.notebook)
+    
+    def action(self, damage):
+        self.dm_memo += damage.val
+    
+    def explode(self):
+        dm = damage_.NoteDamage(self.owner)
+        dm.name = "死亡笔记"
+        dm.set_defender(self.target)
+        dm.set_base_val(self.dm_memo)
+        dm.run()
+        self.remove()
+
+class Notebook(Linker):
+    "书翁记仇的主体"
+    def add(self, target):
+        super().add(target)
+        self.owner.notebook = self
+    
+    def action(self):
+        for each in self._link[:]:
+            each.explode()
+            self.link_cut(each)
+    
+# TODO 土蜘蛛的效果

@@ -1,6 +1,5 @@
 "存储一些式神的初始数据"
 import passive
-import helper
 
 BOSS_DUMMY = {"base_atk" : 3000,
               "base_def" : 300,
@@ -24,7 +23,7 @@ Bird = {      "base_atk" : 3082,
               "base_cri" : 10,
               "base_criDM" : 150,
               "base_max_hp" : 10823,
-              "passive":[helper.BirdAssist]}
+              "passive":[passive.BirdAssist]}
 
 WineKing = {  "base_atk" : 3136,
               "base_def" : 375,
@@ -56,7 +55,7 @@ ShuWeng = {   "base_atk" : 2680,
               "base_cri" : 8,
               "base_criDM" : 150,
               "base_max_hp" : 11393,
-              "passive":[helper.Notebook]}
+              "passive":[passive.Notebook]}
 
 Scarecrow = { "base_atk" : 0,
               "base_def" : 0,

@@ -1,9 +1,10 @@
 "技能相关模块"
+
+from random import randint, choice
+
+from passive import TakeNotes
 from damage_ import NormalDamage
 from buff_ import Fear
-from random import randint, choice
-from helper import TakeNotes
-import pet_
 
 #技能基类
 class baseSKill:
@@ -276,6 +277,7 @@ class UglyGirlSkill3(baseSKill):
         self.showtime = 3
     
     def action(self, target):
-        pet = pet_.Scarecrow(self.owner, target)
+        from servant import Scarecrow
+        pet = Scarecrow(self.owner, target)
         pet.config()
 
