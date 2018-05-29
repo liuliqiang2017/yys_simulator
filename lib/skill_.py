@@ -257,7 +257,6 @@ class ShuWengSkill3(baseSKill):
     def note_one(self, target):
         note = TakeNotes(self.owner)
         note.add(target)
-        note.link_to(self.owner.notebook)
         self.atk_one(target, self.factor)
 
 class UglyGirlSkill1(baseSKill):

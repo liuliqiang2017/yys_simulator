@@ -254,7 +254,7 @@ class Notebook(Linker):
     def action(self, target):
         for each in self._link[:]:
             each.explode()
-            self.link_cut(each)
+            each.link_cut(self)
 
 class Transit(Linker):
     "草人传递伤害"

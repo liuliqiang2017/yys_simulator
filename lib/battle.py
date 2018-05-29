@@ -17,7 +17,6 @@ class Team:
     
     def remove_member(self, member):
         if member in self.members:
-            member.team = None
             self.members.remove(member)
     
     def add_enemy(self, team):

@@ -32,4 +32,6 @@ def main():
     bat.run()
 
 if __name__ == '__main__':
-    main()
+    import cProfile
+    test= "main()"
+    cProfile.run(test)

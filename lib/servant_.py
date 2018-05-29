@@ -216,6 +216,8 @@ class Servant:
     
     def ai_act(self):
         "自动战斗时的ai，此处是最基础的3火开大ai"
+        if self.team.energe >= self.skill_3.cost and isinstance(self.enemy.pet, Scarecrow):
+            self.skill_3(self.enemy.pet)
         targets = self.enemy.alive_members()
         if targets:                
             if self.team.energe >= self.skill_3.cost:
@@ -333,12 +335,7 @@ class ShuWeng(Servant):
     def set_skills(self):
         self.skill_1 = skill_.ShuWengSkill1(self)
         self.skill_3 = skill_.ShuWengSkill3(self)
-    
-    def ai_act(self):
-        if self.team.energe >= 2 and isinstance(self.enemy.pet, Scarecrow):
-            self.skill_3(self.enemy.pet)
-        else:
-            super().ai_act()
+
 
 class UglyGirl(Servant):
     "丑女"
