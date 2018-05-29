@@ -334,7 +334,6 @@ class ShuWeng(Servant):
         self.skill_1 = skill_.ShuWengSkill1(self)
         self.skill_3 = skill_.ShuWengSkill3(self)
 
-
 class UglyGirl(Servant):
     "丑女"
     def config(self):
@@ -350,6 +349,14 @@ class UglyGirl(Servant):
         else:
             super().ai_act()
     
+class Peach(Servant):
+    "桃子"
+    def config(self):
+        super().config(servant_base.Peach)
+    
+    def set_skills(self):
+        self.skill_1 = skill_.PeachSkill1(self)
+        self.skill_3 = skill_.PeachSkill3(self)
 
 # 召唤物等
 class basePet(Servant):

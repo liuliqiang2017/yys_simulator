@@ -281,3 +281,28 @@ class UglyGirlSkill3(baseSKill):
             pet = Scarecrow(self.owner, target)
             pet.config()
 
+
+class PeachSkill1(baseSKill):
+    "桃子一技能"
+    def config(self):
+        self.name = "兔狱卒·叱责"
+        self.cost = 0
+        self.factor = 1.25
+        self.showtime = 1.5
+
+class PeachSkill3(baseSKill):
+    "桃子二技能"
+    def config(self):
+        self.name = "蜜桃·地狱偶像"
+        self.cost = 2
+        self.factor = 0
+        self.showtime = 2.5
+        self.distance = self.owner.team.arena.run_bar * 0.25
+    
+    def action(self, target):
+        for each in self.owner.team.alive_members():
+            self.pull_one(each)
+
+    def pull_one(self, target):
+        target.move(self.distance)
+        target.status.hp += self.owner.status.get_max_hp() * 0.1

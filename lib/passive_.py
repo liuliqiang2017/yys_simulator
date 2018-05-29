@@ -83,7 +83,8 @@ class Curse(PassiveSkill):
     def action(self, target):
         "给对面随机人员上个buff"
         aim = target.enemy.random_member()
-        buff_.CurseFire(self.owner).add(aim)
+        if aim:
+            buff_.CurseFire(self.owner).add(aim)
 
 class DrinkPostRound(PassiveSkill):
     "酒吞回合结束喝酒"
@@ -247,7 +248,8 @@ class Notebook(Linker):
     
     def action(self, target):
         for each in self._link[:]:
-            each.explode()
+            if each.target.is_alive():
+                each.explode()
             each.link_cut(self)
 
 class Transit(Linker):

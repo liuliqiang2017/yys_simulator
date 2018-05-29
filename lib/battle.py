@@ -69,7 +69,9 @@ class Battle:
         team1.add_enemy(team2)
         team2.add_enemy(team1)
         self.team1 = team1
+        self.team1.arena = self
         self.team2 = team2
+        self.team1.arena = self
         self.members = team1.members + team2.members
         self.members.sort(key=lambda x:x.status.get_speed(), reverse=True)
         self.run_bar = self.members[0].status.get_speed() * 30
@@ -88,8 +90,8 @@ class Battle:
             for member in self.team1.members + self.team2.members:
                 if member.is_alive():
                     member.move()
-                if member.location >= self.run_bar:
-                    self._ready.append(member)
+                    if member.location >= self.run_bar:
+                        self._ready.append(member)
 
         if self.team1.alive_members():
             print("team1获胜")

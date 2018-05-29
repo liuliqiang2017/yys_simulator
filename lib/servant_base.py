@@ -72,3 +72,11 @@ UglyGirl = {  "base_atk" : 1741,
               "base_criDM" : 150,
               "base_max_hp" : 7963,
               "passive":[passive_.Curse]}
+
+Peach = {     "base_atk" : 2064,
+              "base_def" : 485,
+              "base_speed" : 110,
+              "base_cri" : 5,
+              "base_criDM" : 150,
+              "base_max_hp" : 12418,
+              "passive":[]}
