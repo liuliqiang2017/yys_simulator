@@ -277,6 +277,7 @@ class UglyGirlSkill3(baseSKill):
     
     def action(self, target):
         from servant_ import Scarecrow
-        pet = Scarecrow(self.owner, target)
-        pet.config()
+        if target.team.pet is None:
+            pet = Scarecrow(self.owner, target)
+            pet.config()
 

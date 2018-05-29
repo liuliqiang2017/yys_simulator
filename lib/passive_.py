@@ -171,15 +171,9 @@ class Linker(basePassive):
 
     
     def link_to(self, link):
-        if link not in self._link:
-            self._link.append(link)
-        if self not in link._link:
-            link._link.append(self)
-
+        link._link.append(self)
     
     def link_cut(self, link):
-        if link in self._link:
-            self._link.remove(link)
         if self in link._link:
             link._link.remove(self)
 

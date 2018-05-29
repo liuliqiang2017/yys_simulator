@@ -1,5 +1,6 @@
 "队伍相关，包括队伍创建。战斗相关，包括行动条，鬼火条，大宝剑，双方队伍的维护"
 from random import choice
+from servant_ import Scarecrow
 
 class Team:
     "队伍类"
@@ -27,7 +28,13 @@ class Team:
         return [member for member in self.members if member.is_alive()]
 
     def random_member(self):
-        return choice(self.alive_members())
+        if self.alive_members():
+            return choice(self.alive_members())
+    
+    def best_choice(self):
+        if isinstance(self.pet, Scarecrow):
+            return self.pet
+        return self.random_member()
     
     def energe_walk(self, num=1):
         self.energe_circle += num
@@ -117,6 +124,7 @@ class PreAction(Handler):
         self.actor.location = 0
         # 结算回合前触发的各种东西
         self.actor.trigger(self.actor, flag="action_pre_round")
+
 
 # TODO 回合中的过程
 class Acting(Handler):

@@ -4,7 +4,7 @@ import servant_
 from passive_ import Needle, BadThing, LuckyCat, NetCut
 
 def main():
-    atk_dict = {"hp":100000, "atk":8312, "cri":105, "criDM":257, "speed":135, "def_":523, "yuhun":[LuckyCat], "name": "书翁"}
+    atk_dict = {"hp":10000, "atk":8312, "cri":105, "criDM":257, "speed":135, "def_":523, "yuhun":[LuckyCat], "name": "书翁"}
     atker = servant_.ShuWeng(atk_dict)
     atk_dict1 = {"hp":100000, "atk":8812, "cri":105, "criDM":227, "speed":128, "def_":523, "yuhun":[Needle, BadThing], "name": "姑获鸟"}
     atker1 = servant_.Bird(atk_dict1)
@@ -32,6 +32,7 @@ def main():
     bat.run()
 
 if __name__ == '__main__':
-    import cProfile
-    test= "main()"
-    cProfile.run(test)
+    # import cProfile
+    # test= "main()"
+    # cProfile.run(test)
+    main()

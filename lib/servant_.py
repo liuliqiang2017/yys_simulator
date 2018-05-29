@@ -216,14 +216,12 @@ class Servant:
     
     def ai_act(self):
         "自动战斗时的ai，此处是最基础的3火开大ai"
-        if self.team.energe >= self.skill_3.cost and isinstance(self.enemy.pet, Scarecrow):
-            self.skill_3(self.enemy.pet)
-        targets = self.enemy.alive_members()
-        if targets:                
+        target = self.enemy.best_choice()
+        if target:                
             if self.team.energe >= self.skill_3.cost:
-                self.skill_3(choice(targets))
+                self.skill_3(target)
             else:
-                self.skill_1(choice(targets))
+                self.skill_1(target)
     
     def counter(self, target):
         "反击，默认用一技能反击"
@@ -240,8 +238,9 @@ class Servant:
     def defend(self, damage):
         # 结算伤害
         self.damage_apply(damage)
-        # 输出伤害信息，方便测试
-        print("{}使用{}对{}造成{}伤害".format(damage.atker.name, damage.name, damage.defer.name, damage.val))
+        # # 输出伤害信息，方便测试
+        # if damage.atker.name == "书翁":
+        #     print("{}使用{}对{}造成{}伤害".format(damage.atker.name, damage.name, damage.defer.name, damage.val))
         # 受攻击后的被动触发判定
         if damage.trigger:
             self.trigger(damage, flag="action_by_hit")
@@ -302,7 +301,6 @@ class LuSheng(Servant):
         self.skill_1 = skill_.LuShengSkill1(self)
         self.skill_3 = skill_.LuShengSkill3(self)
 
-
 class YuZaoQian(Servant):
     "玉藻前"
     def config(self):
@@ -346,6 +344,12 @@ class UglyGirl(Servant):
         self.skill_1 = skill_.UglyGirlSkill1(self)
         self.skill_3 = skill_.UglyGirlSkill3(self)
     
+    def ai_act(self):
+        if self.enemy.pet:
+            self.skill_1(self.enemy.best_choice())
+        else:
+            super().ai_act()
+    
 
 # 召唤物等
 class basePet(Servant):
@@ -381,6 +385,7 @@ class Scarecrow(basePet):
         self.create()
     
     def ai_act(self):
+        "草人什么也不干"
         pass
     
     def create(self):

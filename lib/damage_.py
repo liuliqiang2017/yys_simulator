@@ -55,7 +55,7 @@ class NormalDamage(Damage):
         atk_dm = data_dict["atk"] * criDM * 3 * self.factor * data_dict["damage_ratio"] * data_dict["harm_ratio"]
         def_dm = (data_dict["def"] + data_dict["extra_def"] - data_dict["def_break"]) * data_dict["def_reduce"] + 300
         dm = atk_dm / def_dm
-        return round(dm)
+        return dm
 
 class Counter_Damage(NormalDamage):
     "反击伤害，正常伤害的一种，不可被反击"
