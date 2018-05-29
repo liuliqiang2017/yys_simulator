@@ -101,9 +101,9 @@ class Battle:
 
         if self.timer < time:
             if self.team1.alive_members():
-                print("team1获胜")
+                print("team1获胜，总计用时", self.timer)
             else:
-                print("team2获胜")
+                print("team2获胜，总计用时", self.timer)
         for each in self.members:
             print(each.recorder.get_result())
 

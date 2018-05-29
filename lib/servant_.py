@@ -151,6 +151,9 @@ class Statistic:
     def add_damage(self, damage):
         self.record["total_damage"] += damage.val
         self.record[damage.name] += damage.val
+        self.record["对"+damage.defer.name+"伤害"] += damage.val
+        if self.record["最大单次伤害"] < damage.val:
+            self.record["最大单次伤害"] = damage.val
     
     def add_skill(self, skill_name, num=1):
         self.record[skill_name + "次数"] += 1
