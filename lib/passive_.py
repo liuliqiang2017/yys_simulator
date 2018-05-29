@@ -1,15 +1,13 @@
 """
 被动技能以及御魂类
-act_period：触发时间，数值分为1X,2X, 3X，4X 方便扩展分别如下
-1x：从11到19，为回合开始前的时段
-    11. 回合开始前触发，比如大天狗的加攻击，作用于owner
-2x：从21到29，为回合中的时段
-    21. 攻击前触发，比如网切等，作用于damage, 无论有没有伤害
-    23. 攻击后有伤害触发(相当于攻击后)， 破势，针女，各种控制御魂，作用于damage
-3x：从31到39，为回合结束的时段
-    31. 回合结束时触发，比如招财猫，轮入道等，作用于owner
-4x：从41到49，为回合外的时段
-    41. 受到攻击后触发（有伤害），金刚经，返魂香，铮，还有一些反击等。
+由属性position决定触发时间分别如下
+"pre_round" : 回合前
+"pre_skill" : 技能命中前
+"post_skill" : 技能命中后
+"post_round" :回合后
+"by_hit" : 被攻击时
+
+初始化时需要传入实例的创建者owner， 将实例添加到目标时需要调用add(target)， 删除remove()， 生效action(target)接收一个目标参数
 如果多个时间段触发，如酒吞被打和回合结束，那就写两个被动。
 注：觉醒带来的效果直接写入基础属性里，不单独作为被动技能实现。有些被动完全和技能挂钩的直接写在技能里，也不单独实现
 action: 触发过程
@@ -37,24 +35,19 @@ class basePassive:
     def __init__(self, owner=None):
         super().__init__()
         self.owner = owner
+        self.position = ""
         self.config()
     
     def config(self):
-        self.act_period = 0
+        "做一些配置，由子类实现"
+        raise NotImplementedError
     
     def add(self, target):
-        self.owner = target
-        if self.act_period == 11:
-            self.owner.trigger_pre_round.append(self)
-        elif self.act_period == 21:
-            self.owner.trigger_pre_skill.append(self)
-        elif self.act_period == 23:
-            self.owner.trigger_post_skill.append(self)
-        elif self.act_period == 31:
-            self.owner.trigger_post_round.append(self)
-        elif self.act_period == 41:
-            self.owner.trigger_by_hit.append(self)
-        
+        self.target = target
+        target.add_passive(self)
+    
+    def remove(self):
+        self.target.remove_passive(self)
     
     def action(self):
         "触发效果，由子类实现"
@@ -62,58 +55,61 @@ class basePassive:
 
 class PassiveSkill(basePassive):
     "被动技能类"
-    pass
+    def __init__(self, owner=None):
+        super().__init__(owner)
+        self.classify = "passive"
 
 class YuHun(basePassive):
     "御魂类"
-    pass
+    def __init__(self, owner=None):
+        super().__init__(owner)
+        self.classify = "yuhun"
 
-# TODO 被动技能：鸟的协战，荒的开幻境
 
 class SteelFeather(PassiveSkill):
     "天狗的铁毛，目前只有伤害加成部分"
     def config(self):
-        self.act_period = 11
+        self.position = "pre_round"
     
-    def action(self):
+    def action(self, target):
         "给owner加个buff"
-        buff_.SteelMao(self.owner).add(self.owner)
+        buff_.SteelMao(self.owner).add(target)
 
 class Curse(PassiveSkill):
     "丑女的诅咒"
     def config(self):
-        self.act_period = 33
+        self.position = "post_round"
     
-    def action(self):
+    def action(self, target):
         "给对面随机人员上个buff"
-        target = self.owner.enemy.random_member()
-        buff_.CurseFire(self.owner).add(target)
+        aim = target.enemy.random_member()
+        buff_.CurseFire(self.owner).add(aim)
 
 class DrinkPostRound(PassiveSkill):
     "酒吞回合结束喝酒"
     def config(self):
-        self.act_period = 31
+        self.position = "post_round"
     
-    def action(self):
+    def action(self, target):
         "本大爷要喝一口酒"
-        if self.owner.wine < 4 and randint(1, 1000) <= 500:
-            self.owner.wine += 1
+        if target.wine < 4 and randint(1, 1000) <= 500:
+            target.wine += 1
 
 class DrinkByHit(PassiveSkill):
     "酒吞被打喝酒"
     def config(self):
-        self.act_period = 41
+        self.position = "by_hit"
     
     def action(self, damage):
-        if self.owner.wine < 4 and randint(1, 1000) <= 250:
-            self.owner.wine += 1
+        if damage.defer.wine < 4 and randint(1, 1000) <= 250:
+            damage.defer.wine += 1
 
 # TODO 御魂：土蜘蛛。
 @sington
 class Needle(YuHun):
     "针女"
     def config(self):
-        self.act_period = 23
+        self.position = "post_skill"
     
     def action(self, damage):
         "破盾暴击有40%几率，由damage的攻击方向防守方造成一次真实伤害"
@@ -125,7 +121,7 @@ class Needle(YuHun):
 class NetCut(YuHun):
     "网切"
     def config(self):
-        self.act_period = 21
+        self.position = "pre_skill"
     
     def action(self, damage):
         "50%几率降低对方45%的防御"
@@ -135,7 +131,7 @@ class NetCut(YuHun):
 class BadThing(YuHun):
     "破势"
     def config(self):
-        self.act_period = 23
+        self.position = "post_skill"
     
     def action(self, damage):
         "对方血量超过70%，伤害增加40%"
@@ -145,7 +141,7 @@ class BadThing(YuHun):
 class HeartEye(YuHun):
     "心眼"
     def config(self):
-        self.act_period = 23
+        self.position = "post_skill"
 
     def action(self, damage):
         "对方血量低于30%， 伤害增加50%"
@@ -155,88 +151,54 @@ class HeartEye(YuHun):
 class LuckyCat(YuHun):
     "招财猫"
     def config(self):
-        self.act_period = 11
+        self.position = "pre_round"
     
-    def action(self):
+    def action(self, target):
         "回合开始概率回2火"
         if randint(1, 1000) <= 500:
-            self.owner.team.energe_change(2)
+            target.team.energe_change(2)
 
-class Transit(basePassive):
-    "草人传递伤害"
-    def config(self):
-        self.act_period = 41
-    
-    def action(self, damage):
-        dm = damage_.RealDamage(self.owner.owner)
-        dm.name = "草人传递"
-        dm.set_base_val(damage.val)
-        dm.set_defender(self.owner.target)
-        dm.run()
-        # 传递完判定owner以及target是否死亡, 任意一方死亡则删除草人
-        if not (self.owner.is_alive() and self.owner.target.is_alive()):
-            self.owner.remove()
 
-class CheakRound(basePassive):
-    "草人回合检测"
-    def config(self):
-        self.act_period = 31
-    
-    def action(self):
-        self.owner.round_num -= 1
-        if self.owner.round_num <= 0:
-            self.owner.remove()
 
 # 以下是helper的一些东西
 
-class Linker:
+class Linker(basePassive):
     "联动器基类"
     def __init__(self, owner):
-        self.owner = owner
         self._link = []
-        self.config()
-    
-    def config(self):
-        self.position = "self.target.trigger_pre_round"
+        self.classify = "helper"
+        super().__init__(owner)       
+
     
     def link_to(self, link):
         if link not in self._link:
             self._link.append(link)
         if self not in link._link:
             link._link.append(self)
+
     
     def link_cut(self, link):
         if link in self._link:
             self._link.remove(link)
         if self in link._link:
             link._link.remove(self)
-    
-    def add(self, target):
-        self.target = target
-        self.position = eval(self.position)
-        self.position.append(self)
-    
-    def remove(self):
-        self.position.remove(self)
-    
-    def action(self):
-        raise NotImplementedError
 
 
 class AssistAtk(Linker):
     "协战, 把观察者放在每个其他友方式神的触发里"
     def config(self):
         self.chance = 300
+        self.position = "pre_skill"
     
     def add(self, target):
         for each in target.team.members:
             if each is not self.owner:
-                each.trigger_post_skill.append(self)
+                each.add_passive(self)
 
     def remove(self):
         for each in self.owner.team.members:
             if each is not self.owner:
-                each.trigger_post_skill.remove(self)
+                each.remove_passive(self)
     
     def action(self, damage):
         if all([self.owner.is_alive(),
@@ -248,6 +210,7 @@ class AssistAtk(Linker):
 class HuangAssist(AssistAtk):
     "荒的协战"
     def config(self):
+        super().config()
         self.chance = 500
     
     def action(self, damage):
@@ -258,15 +221,14 @@ class HuangAssist(AssistAtk):
 # 鸟的协战
 class BirdAssist(AssistAtk):
     "鸟的协战"
-    def config(self):
-        self.chance = 300
+    pass
 
 # 书翁记仇。
 class TakeNotes(Linker):
     "书翁记仇的分体, 主体作为被动存在"
     def config(self):
         self.dm_memo = 0
-        self.position = "self.target.trigger_by_hit"
+        self.position = "by_hit"
         self.link_to(self.owner.notebook)
     
     def action(self, damage):
@@ -282,13 +244,41 @@ class TakeNotes(Linker):
 
 class Notebook(Linker):
     "书翁记仇的主体"
+    def config(self):
+        self.position = "pre_round"
+
     def add(self, target):
         super().add(target)
         self.owner.notebook = self
     
-    def action(self):
+    def action(self, target):
         for each in self._link[:]:
             each.explode()
             self.link_cut(each)
+
+class Transit(Linker):
+    "草人传递伤害"
+    def config(self):
+        self.position = "by_hit"
+    
+    def action(self, damage):
+        dm = damage_.RealDamage(self.owner.owner)
+        dm.name = "草人传递"
+        dm.set_base_val(damage.val)
+        dm.set_defender(self.owner.target)
+        dm.run()
+        # 传递完判定owner以及target是否死亡, 任意一方死亡则删除草人
+        if not (self.owner.is_alive() and self.owner.target.is_alive()):
+            self.owner.remove()
+
+class CheakRound(Linker):
+    "草人回合检测"
+    def config(self):
+        self.position = "post_round"
+    
+    def action(self, target):
+        target.round_num -= 1
+        if target.round_num <= 0:
+            target.remove()
     
 # TODO 土蜘蛛的效果

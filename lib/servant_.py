@@ -7,8 +7,11 @@ from random import choice
 import servant_base
 import skill_
 
+class MemberDead(Exception):
+    "成员死亡异常"
+    pass
 
-class Servant_Data:
+class ServantData:
     "式神数据基类，从给定的参数字典初始化式神的属性"
     def __init__(self, data_dict, owner):
         super().__init__()
@@ -79,7 +82,58 @@ class Servant_Data:
     def get_hp_percent(self):
         return self.hp / self.get_max_hp()
 
-# TODO 式神技能类Servant_Skill
+# TODO 式神被动御魂管理类
+class PassiveManage:
+    "被动，御魂等管理类"
+    def __init__(self):
+        super().__init__()
+        self.pre_round = []
+        self.post_round = []
+        self.pre_skill = []
+        self.post_skill = []
+        self.by_hit = []
+
+    def add(self, passive):
+        self.__dict__[passive.position].append(passive)
+    
+    def remove(self, passive):
+        try:
+            self.__dict__[passive.position].remove(passive)
+        except ValueError:
+            pass
+    
+    def stimulate(self, target, position):
+        for each in position:
+            each.action(target)
+
+    
+    def action_pre_round(self, target):
+        self.stimulate(target, self.pre_round)
+
+    def action_post_round(self, target):
+        self.stimulate(target, self.post_round)
+
+    def action_pre_skill(self, target):
+        self.stimulate(target, self.pre_skill)
+
+    def action_post_skill(self, target):
+        self.stimulate(target, self.post_skill)
+
+    def action_by_hit(self, target):
+        self.stimulate(target, self.by_hit)
+
+class ServantPassive(PassiveManage):
+    "式神被动"
+    pass
+
+class ServantYuHun(PassiveManage):
+    "式神御魂"
+    pass
+
+class ServantHelper(PassiveManage):
+    "式神的其他触发，比如记仇，土蜘蛛等"
+    pass
+
 
 class Statistic:
     "伤害统计类"
@@ -109,7 +163,7 @@ class Servant:
         super().__init__()
         self.data_dict = data_dict
         self.name = data_dict.get("name", "未命名")
-        self.status = Servant_Data(data_dict, self)
+        self.status = ServantData(data_dict, self)
         self.recorder = Statistic(self)
         self.location = self.status.speed
         self.classify = "式神"
@@ -119,12 +173,10 @@ class Servant:
         self.arena = None
         self.run_once = []
         self.status_buff = []
-        self.trigger_pre_round = []
-        self.trigger_post_round = []
-        self.trigger_pre_skill = []
-        self.trigger_post_skill = []
-        self.trigger_by_hit = []
-
+        self.passive = ServantPassive()
+        self.yuhun = ServantYuHun()
+        self.helper = ServantHelper()
+    
     def config(self, base=servant_base.BOSS_DUMMY):
         "由子类实现不同的初始设置，以下是个例子"
         # 初始化式神的基础属性
@@ -150,6 +202,17 @@ class Servant:
     
     def move(self, distance=None):
         self.location += distance if distance else self.status.get_speed()
+
+    def trigger(self, target, *, flag):
+        getattr(self.passive, flag)(target)
+        getattr(self.yuhun, flag)(target)
+        getattr(self.helper, flag)(target)
+    
+    def add_passive(self, passive):
+        self.__dict__[passive.classify].add(passive)
+    
+    def remove_passive(self, passive):
+        self.__dict__[passive.classify].remove(passive)
     
     def ai_act(self):
         "自动战斗时的ai，此处是最基础的3火开大ai"
@@ -179,8 +242,7 @@ class Servant:
         print("{}使用{}对{}造成{}伤害".format(damage.atker.name, damage.name, damage.defer.name, damage.val))
         # 受攻击后的被动触发判定
         if damage.trigger:
-            for each in self.trigger_by_hit:
-                each.action(damage)
+            self.trigger(damage, flag="action_by_hit")
     
     def damage_apply(self, damage):
         if damage.val > self.status.shield:
@@ -238,6 +300,7 @@ class LuSheng(Servant):
         self.skill_1 = skill_.LuShengSkill1(self)
         self.skill_3 = skill_.LuShengSkill3(self)
 
+
 class YuZaoQian(Servant):
     "玉藻前"
     def config(self):
@@ -270,6 +333,12 @@ class ShuWeng(Servant):
     def set_skills(self):
         self.skill_1 = skill_.ShuWengSkill1(self)
         self.skill_3 = skill_.ShuWengSkill3(self)
+    
+    def ai_act(self):
+        if self.team.energe >= 2 and isinstance(self.enemy.pet, Scarecrow):
+            self.skill_3(self.enemy.pet)
+        else:
+            super().ai_act()
 
 class UglyGirl(Servant):
     "丑女"

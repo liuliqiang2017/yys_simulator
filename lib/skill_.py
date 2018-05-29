@@ -2,7 +2,7 @@
 
 from random import randint, choice
 
-from passive import TakeNotes
+from passive_ import TakeNotes
 from damage_ import NormalDamage
 from buff_ import Fear
 
@@ -277,7 +277,7 @@ class UglyGirlSkill3(baseSKill):
         self.showtime = 3
     
     def action(self, target):
-        from servant import Scarecrow
+        from servant_ import Scarecrow
         pet = Scarecrow(self.owner, target)
         pet.config()
 

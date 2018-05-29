@@ -30,14 +30,12 @@ class Damage:
     def run(self):
         # 触发攻击前生效的御魂和被动
         if self.passive:
-            for each in self.atker.trigger_pre_skill:
-                each.action(self)
+            self.atker.trigger(self, flag="action_pre_skill")
         # 计算伤害
         self.val = self.calculate(self.data_dict)
         # 触发攻击后生效的御魂和被动
         if self.passive:
-            for each in self.atker.trigger_post_skill:
-                each.action(self)
+            self.atker.trigger(self, flag="action_post_skill")
         # 生效伤害
         self.defer.defend(self)
         # 传递给攻击者的记录器
@@ -93,8 +91,8 @@ class RealDamage(Damage):
     def config(self):
         self.name = "真实伤害"
         self.passive = False
-        import passive
-        self.check = [passive.BadThing(), passive.HeartEye()]
+        from passive_ import BadThing, HeartEye
+        self.check = [BadThing(), HeartEye()]
     
 
     def set_base_val(self, val):
@@ -103,9 +101,7 @@ class RealDamage(Damage):
     def run(self):
         self.val = self.calculate(self.data_dict)
         # 触发攻击后生效的御魂和被动
-        for each in self.atker.trigger_post_skill:
-            if each in self.check:
-                each.action(self)
+        self.atker.trigger(self, flag="action_post_skill")
         # 生效伤害
         self.defer.defend(self)
         # 传递给攻击者的记录器

@@ -1,4 +1,5 @@
 "队伍相关，包括队伍创建。战斗相关，包括行动条，鬼火条，大宝剑，双方队伍的维护"
+from random import choice
 
 class Team:
     "队伍类"
@@ -25,6 +26,9 @@ class Team:
     
     def alive_members(self):
         return [member for member in self.members if member.is_alive()]
+
+    def random_member(self):
+        return choice(self.alive_members())
     
     def energe_walk(self, num=1):
         self.energe_circle += num
@@ -40,7 +44,6 @@ class Team:
     def add_pet(self, pet):
         if self.pet is None:
             self.pet = pet
-            self.pet.team = self
             self.add_member(pet)
     
     def remove_pet(self, pet):
@@ -114,8 +117,7 @@ class PreAction(Handler):
         # 行动条重置为0
         self.actor.location = 0
         # 结算回合前触发的各种东西
-        for each in self.actor.trigger_pre_round:
-            each.action()
+        self.actor.trigger(self.actor, flag="action_pre_round")
 
 # TODO 回合中的过程
 class Acting(Handler):
@@ -135,8 +137,7 @@ class Ending(Handler):
         if not self.actor.is_alive():
             return
         # 结算回合后的触发效果
-        for each in self.actor.trigger_post_round:
-            each.action()
+        self.actor.trigger(self.actor, flag="action_post_round")
         # 自身buff降一层
         for each in self.actor.status_buff:
             each.layer_update()

@@ -1,5 +1,5 @@
 "存储一些式神的初始数据"
-import passive
+import passive_
 
 BOSS_DUMMY = {"base_atk" : 3000,
               "base_def" : 300,
@@ -15,7 +15,7 @@ BigDog = {    "base_atk" : 3136,
               "base_cri" : 10,
               "base_criDM" : 150,
               "base_max_hp" : 10026,
-              "passive":[passive.SteelFeather]}
+              "passive":[passive_.SteelFeather]}
 
 Bird = {      "base_atk" : 3082,
               "base_def" : 397,
@@ -23,7 +23,7 @@ Bird = {      "base_atk" : 3082,
               "base_cri" : 10,
               "base_criDM" : 150,
               "base_max_hp" : 10823,
-              "passive":[passive.BirdAssist]}
+              "passive":[passive_.BirdAssist]}
 
 WineKing = {  "base_atk" : 3136,
               "base_def" : 375,
@@ -31,7 +31,7 @@ WineKing = {  "base_atk" : 3136,
               "base_cri" : 10,
               "base_criDM" : 150,
               "base_max_hp" : 11165,
-              "passive":[passive.DrinkByHit, passive.DrinkPostRound]}
+              "passive":[passive_.DrinkByHit, passive_.DrinkPostRound]}
 
 LuSheng = {   "base_atk" : 3028,
               "base_def" : 384,
@@ -55,7 +55,7 @@ ShuWeng = {   "base_atk" : 2680,
               "base_cri" : 8,
               "base_criDM" : 150,
               "base_max_hp" : 11393,
-              "passive":[passive.Notebook]}
+              "passive":[passive_.Notebook]}
 
 Scarecrow = { "base_atk" : 0,
               "base_def" : 0,
@@ -63,7 +63,7 @@ Scarecrow = { "base_atk" : 0,
               "base_cri" : 0,
               "base_criDM" : 0,
               "base_max_hp" : 0,
-              "passive":[passive.Transit, passive.CheakRound]}
+              "passive":[passive_.Transit, passive_.CheakRound]}
 
 UglyGirl = {  "base_atk" : 1741,
               "base_def" : 306,
@@ -71,4 +71,4 @@ UglyGirl = {  "base_atk" : 1741,
               "base_cri" : 10,
               "base_criDM" : 150,
               "base_max_hp" : 7963,
-              "passive":[passive.Curse]}
+              "passive":[passive_.Curse]}

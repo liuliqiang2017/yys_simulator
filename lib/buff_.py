@@ -58,7 +58,7 @@ class StatusBuff(baseBuff):
 class StatusDebuff(baseBuff):
     "减益buff"
     def add(self, target):
-        if not self.target.immune:
+        if not target.immune:
             super().add(target)
 
 class Xing(StatusBuff):
