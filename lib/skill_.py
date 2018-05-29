@@ -4,7 +4,7 @@ from random import randint, choice
 
 from passive_ import TakeNotes
 from damage_ import NormalDamage
-from buff_ import Fear
+from buff_ import Fear, Mie, Xing
 
 #技能基类
 class baseSKill:
@@ -306,3 +306,36 @@ class PeachSkill3(baseSKill):
     def pull_one(self, target):
         target.move(self.distance)
         target.status.hp_change(self.owner.status.get_max_hp() * 0.1)
+
+class QingMingSkill1(baseSKill):
+    "晴明普攻"
+    def config(self):
+        self.name = "基础术式"
+        self.cost = 0
+        self.factor = 1.2
+        self.showtime = 1.25
+
+class QingMingSkill2(baseSKill):
+    "晴明灭"
+    def config(self):
+        self.name = "符咒·灭"
+        self.cost = 0
+        self.factor = 0
+        self.showtime = 1.6
+    
+    def action(self, target):
+        for each in target.enemy.alive_members():
+            Mie(self.owner).add(each)
+
+class QingMingSkill3(baseSKill):
+    "晴明星"
+    def config(self):
+        self.name = "符咒·星"
+        self.cost = 0
+        self.factor = 0
+        self.showtime = 1.8
+    
+    def action(self, target):
+        for each in target.team.alive_members():
+            Xing(self.owner).add(each)
+    

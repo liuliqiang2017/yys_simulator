@@ -80,3 +80,11 @@ Peach = {     "base_atk" : 2064,
               "base_criDM" : 150,
               "base_max_hp" : 12418,
               "passive":[]}
+
+QingMing = {  "base_atk" : 3256,
+              "base_def" : 536,
+              "base_speed" : 128,
+              "base_cri" : 0,
+              "base_criDM" : 150,
+              "base_max_hp" : 13847,
+              "passive":[]}

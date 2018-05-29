@@ -365,6 +365,29 @@ class Peach(Servant):
         self.skill_1 = skill_.PeachSkill1(self)
         self.skill_3 = skill_.PeachSkill3(self)
 
+class QingMing(Servant):
+    "晴明"
+    def config(self):
+        super().config(servant_base.QingMing)
+    
+    def set_skills(self):
+        self.skill_1 = skill_.QingMingSkill1(self)
+        self.skill_2 = skill_.QingMingSkill2(self)
+        self.skill_3 = skill_.QingMingSkill3(self)
+    
+    def has_buff(self, buff):
+        for each in self.status_buff:
+            if isinstance(each, buff):
+                return True
+        return False
+    
+    def ai_act(self):
+        from buff_ import Xing
+        if self.has_buff(Xing):
+            self.skill_2(self)
+        else:
+            self.skill_3(self)
+
 # 召唤物等
 class basePet(Servant):
     "宠物类基类"
