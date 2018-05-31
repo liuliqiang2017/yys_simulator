@@ -44,10 +44,10 @@ class My_MainWindow(Ui_MainWindow):
         "设置所有的联动" 
         # 设置所有添加式神的联动
         for i in range(1, 11):
-            eval("self.bt_add{0}.clicked.connect(partial(self.add_servant_to, {0}))".format(i))
+            getattr(self, "bt_add" + str(i)).clicked.connect(partial(self.add_servant_to, i))
         # 设置所有的删除式神联动
         for i in range(1, 11):
-            eval("self.bt_remove{0}.clicked.connect(partial(self.remove_servant_from, {0}))".format(i))
+            getattr(self, "bt_remove" + str(i)).clicked.connect(partial(self.remove_servant_from, i))
         # 设置开始模拟的联动：
         self.start_sim.clicked.connect(self.start_to_run)
         # 设置菜单里的联动：
@@ -73,7 +73,7 @@ class My_MainWindow(Ui_MainWindow):
             self.servant_data[str(location_num)] = res
             self.refresh_servant_display(location_num)
         # 启用相对位置的删除按键
-            self.statusBar.showMessage("添加式神{}成功！".format(res["servant_name"]))
+            self.statusBar.showMessage("添加式神{}成功！".format(res["servant_cls"]))
             self.release_bt(location_num)
     
     def remove_servant_from(self, location_num):
@@ -90,7 +90,6 @@ class My_MainWindow(Ui_MainWindow):
             self.set_head_pic(location_num)
             self.release_bt(location_num)
         else:
-            # eval("self.label{}.setStyleSheet('border-image:url(:/wanted_nodata.jpg)')".format(location_num))
             self.set_head_pic(location_num)
             self.lock_bt(location_num)
     
@@ -102,7 +101,7 @@ class My_MainWindow(Ui_MainWindow):
     
     def set_head_pic(self, location_num):
         path = ":/" + self.get_head_pic(location_num)
-        target = eval("self.label" + str(location_num))
+        target = getattr(self, "label" + str(location_num))
         self.set_bg_pic(target, path)
     
     def has_servant(self, location_num):
@@ -113,14 +112,15 @@ class My_MainWindow(Ui_MainWindow):
     
     
     def lock_bt(self, location_num):
-        eval("self.bt_remove{}.setEnabled(False)".format(location_num))
-        eval("self.bt_add{}.setText('添加式神')".format(location_num))
+        getattr(self, "bt_remove" + str(location_num)).setEnabled(False)
+        getattr(self, "bt_add" + str(location_num)).setText('添加式神')
     
     def release_bt(self, location_num):
-        eval("self.bt_remove{}.setEnabled(True)".format(location_num))
-        eval("self.bt_add{}.setText('修改式神')".format(location_num))
+        getattr(self, "bt_remove" + str(location_num)).setEnabled(True)
+        getattr(self, "bt_add" + str(location_num)).setText('修改式神')
 
     def init_sevrant_data(self, location_num):
+        "恢复式神数据到初始状态"
         data =  dict(servant_cls=None,
                      servant_name="", 
                      servant_atk=0, 
@@ -142,7 +142,7 @@ class My_MainWindow(Ui_MainWindow):
     
     def start_to_run(self):
         "运行模拟"
-        self.create_set_panel()
+        self.statusBar.showMessage("模拟开始,运算中...")
         # TODO 根据data中存储的数据生成式神
         # TODO 建立team1，team2 ， battle。
         # TODO battle初始化，添加两个team
@@ -152,31 +152,35 @@ class My_MainWindow(Ui_MainWindow):
     def save_data_to_json(self):
         "把所有式神的data数据保存到json文件"
         
-        # TODO 弹出窗口要求用户选择存储位置
+        # 弹出窗口要求用户选择存储位置
         fileName = QtWidgets.QFileDialog.getSaveFileName(None,
                                        r'创建队伍信息并保存',
                                        r'yys_teamdata',
                                        r'JSON Files(*.json)')
+        # 保存文件，默认文件名yys_teamdata.json
         with open(fileName[0], "w") as f_obj:
             json.dump(self.servant_data, f_obj)
+
+        # 状态栏提示
         self.statusBar.showMessage("保存队伍成功")
-        # TODO 保存文件，默认文件名yys_teamdata.json
-        # TODO 成功保存就返回
+
     
     def load_data_from_json(self):
         "读取数据"
-        # TODO 弹出窗口要求用户选择文件
+        # 弹出窗口要求用户选择文件
         fileName = QtWidgets.QFileDialog.getOpenFileName(None,
                                r'创建队伍信息并保存',
                                r'yys_teamdata',
                                r'JSON Files(*.json)')
         with open(fileName[0], "r") as f_obj:
-            self.servant_data = json.load(f_obj)
+            data = json.load(f_obj)
         # TODO 验证文件有效性
-        # 读取json，覆盖本身的data
-        # 重新刷新所有位置的信息
-        for i in range(1, 11):
-            self.refresh_servant_display(i)
+        if len(data) == 10:
+            # 读取json，覆盖本身的data
+            self.servant_data = data
+            # 重新刷新所有位置的信息
+            for i in range(1, 11):
+                self.refresh_servant_display(i)
 
     def show_help_information(self):
         "使用帮助"
