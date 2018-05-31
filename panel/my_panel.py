@@ -7,6 +7,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from servant_set_dialog import MyDialog
 from config import SERVANT_SOURCE
 
+import images
+
 class My_MainWindow(Ui_MainWindow):
 
     def __init__(self):
@@ -20,16 +22,15 @@ class My_MainWindow(Ui_MainWindow):
         self.set_all_backgourd()
         self.set_trigger_connect()
         self.statusBar.showMessage('这里是状态栏...')
-
         
 
     def set_all_backgourd(self):
         "设置所有背景图片"
-        self.set_bg_pic(self.MainWindow, "images/yys_bg03.jpg")
-        self.set_bg_pic(self.centralwidget, "images/bg_frame.png")
-        self.set_bg_pic(self.vs_pic, "images/vs.png")
-        self.set_bg_pic(self.team1_leader, "images/qingming.jpg")
-        self.set_bg_pic(self.team2_leader, "images/guiwang.png")
+        self.set_bg_pic(self.MainWindow, ":/yys_bg.jpg")
+        self.set_bg_pic(self.centralwidget, ":/bg_frame.png")
+        self.set_bg_pic(self.vs_pic, ":/vs.png")
+        self.set_bg_pic(self.team1_leader, ":/qingming.jpg")
+        self.set_bg_pic(self.team2_leader, ":/guiwang.jpg")
         for i in range(1, 11):
             self.refresh_servant_display(i)
 
@@ -67,27 +68,13 @@ class My_MainWindow(Ui_MainWindow):
             res = self.create_set_panel()
         else:
             res = self.create_set_panel(self.servant_data[str(location_num)])
-        # TODO 根据返回的data数据初始化相对位置的头像，存储data
+        # 根据返回的data数据初始化相对位置的头像，存储data
         if res:
             self.servant_data[str(location_num)] = res
             self.refresh_servant_display(location_num)
         # 启用相对位置的删除按键
             self.statusBar.showMessage("添加式神{}成功！".format(res["servant_name"]))
-            eval("self.bt_remove{}.setEnabled(True)".format(location_num))
-        # 自身改为修改式神
-            eval("self.bt_add{}.setText('修改式神')".format(location_num))
-
-    def refresh_servant_display(self, location_num):
-        # TODO 刷新的判断要智能
-        if self.servant_data[str(location_num)]["servant_cls"]:
-            eval("self.label{}.setStyleSheet('border-image:url(images/head/{})')".format(location_num,
-                SERVANT_SOURCE[self.servant_data[str(location_num)]["servant_cls"]]["head_pic"]))
-            eval("self.bt_remove{}.setEnabled(True)".format(location_num))
-            eval("self.bt_add{}.setText('修改式神')".format(location_num))
-        else:
-            eval("self.label{}.setStyleSheet('border-image:url(images/head/wanted_nodata.png)')".format(location_num))
-            eval("self.bt_remove{}.setEnabled(False)".format(location_num))
-            eval("self.bt_add{}.setText('添加式神')".format(location_num))
+            self.release_bt(location_num)
     
     def remove_servant_from(self, location_num):
         "在num指定的位置清除数据"
@@ -95,10 +82,43 @@ class My_MainWindow(Ui_MainWindow):
         self.init_sevrant_data(location_num)
         self.refresh_servant_display(location_num)
         # 锁定自身按钮不可用
-        self.statusBar.showMessage('你点击了位置{}的删除式神按钮'.format(location_num))
+        self.lock_bt(location_num)
+
+    def refresh_servant_display(self, location_num):
+        # TODO 刷新的判断要智能
+        if self.has_servant(location_num):
+            self.set_head_pic(location_num)
+            self.release_bt(location_num)
+        else:
+            # eval("self.label{}.setStyleSheet('border-image:url(:/wanted_nodata.jpg)')".format(location_num))
+            self.set_head_pic(location_num)
+            self.lock_bt(location_num)
+    
+    def get_head_pic(self, location_num):
+        try:
+            return SERVANT_SOURCE[self.servant_data[str(location_num)]["servant_cls"]]["head_pic"]
+        except KeyError:
+            return "wanted_nodata.jpg"
+    
+    def set_head_pic(self, location_num):
+        path = ":/" + self.get_head_pic(location_num)
+        target = eval("self.label" + str(location_num))
+        self.set_bg_pic(target, path)
+    
+    def has_servant(self, location_num):
+        return self.servant_data[str(location_num)]["servant_cls"]
+    
+    def get_servant_data(self, location_num):
+        return self.servant_data[str(location_num)]
+    
+    
+    def lock_bt(self, location_num):
         eval("self.bt_remove{}.setEnabled(False)".format(location_num))
         eval("self.bt_add{}.setText('添加式神')".format(location_num))
-
+    
+    def release_bt(self, location_num):
+        eval("self.bt_remove{}.setEnabled(True)".format(location_num))
+        eval("self.bt_add{}.setText('修改式神')".format(location_num))
 
     def init_sevrant_data(self, location_num):
         data =  dict(servant_cls=None,
