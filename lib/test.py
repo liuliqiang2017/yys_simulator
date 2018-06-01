@@ -1,7 +1,7 @@
 "测试模块"
-import battle
-import servant_
-from passive_ import Needle, BadThing, LuckyCat, NetCut
+from . import battle
+from . import servant_
+from .passive_ import Needle, BadThing, LuckyCat, NetCut
 
 def main():
     atk_dict = {"hp":28681, "atk":3427, "cri":100, "criDM":231, "speed":125, "def_":567, "yuhun":[], "name": "书翁"}

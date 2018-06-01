@@ -2,9 +2,9 @@
 
 from random import randint, choice
 
-from passive_ import TakeNotes
-from damage_ import NormalDamage
-from buff_ import Fear, Mie, Xing
+from .passive_ import TakeNotes
+from .damage_ import NormalDamage
+from .buff_ import Fear, Mie, Xing
 
 #技能基类
 class baseSKill:
@@ -281,7 +281,7 @@ class UglyGirlSkill3(baseSKill):
         self.showtime = 3
     
     def action(self, target):
-        from servant_ import Scarecrow
+        from .servant_ import Scarecrow
         if target.team.pet is None:
             pet = Scarecrow(self.owner, target)
             pet.config()

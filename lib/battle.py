@@ -1,6 +1,8 @@
 "队伍相关，包括队伍创建。战斗相关，包括行动条，鬼火条，大宝剑，双方队伍的维护"
 from random import choice
-from servant_ import Scarecrow
+from . import servant_
+from . import passive_
+from . import config
 
 class Team:
     "队伍类"
@@ -35,7 +37,7 @@ class Team:
             return choice(self.alive_members())
     
     def best_choice(self):
-        if isinstance(self.pet, Scarecrow):
+        if isinstance(self.pet, servant_.Scarecrow):
             return self.pet
         return self.random_member()
     
@@ -99,13 +101,14 @@ class Battle:
                     if member.location >= self.run_bar:
                         self._ready.append(member)
 
-        if self.timer < time:
-            if self.team1.alive_members():
-                print("team1获胜，总计用时", self.timer)
-            else:
-                print("team2获胜，总计用时", self.timer)
-        for each in self.members:
-            print(each.recorder.get_result())
+        # if self.timer < time:
+        #     if self.team1.alive_members():
+        #         print("team1获胜，总计用时", self.timer)
+        #     else:
+        #         print("team2获胜，总计用时", self.timer)
+        # for each in self.members:
+        #     print(each.recorder.get_result())
+        return [each.recorder.get_result() for each in self.members]
 
 """
 实现式神的不同行动方式，正常回合，反击，伪回合。
@@ -187,3 +190,58 @@ class FakeRound(Handler):
 
     def run(self):
         pass
+
+# 接收界面传过来的data数据，模拟战斗，返回结果
+
+class Simulate:
+    "模拟战斗类"
+    def __init__(self, data):
+        self.data = data
+    
+    def create_servant(self, data_dict):
+        data = dict(
+            name = data_dict["servant_name"],
+            hp = data_dict["servant_hp"],
+            speed = data_dict["servant_speed"],
+            atk = data_dict["servant_atk"],
+            def_ = data_dict["servant_def"],
+            cri = data_dict["servant_cri"],
+            criDM = data_dict["servant_cridm"],
+            yuhun = []
+        )
+        data["yuhun"].append(self.get_servant_yuhun(data_dict))
+        return self.get_servant_cls(data_dict)(data)
+    
+    def get_servant_cls(self, data_dict):    
+        cls_str = config.SERVANT_SOURCE[data_dict["servant_cls"]]["cls"]
+        return eval("servant_." + cls_str)
+    
+    def get_servant_yuhun(self, data_dict):        
+        yuhun_str = config.YUHUN_SOURCE[data_dict["servant_yuhun"]]["cls"]
+        return eval("passive_." + yuhun_str)
+    
+    def has_servant(self, data_dict):
+        return data_dict["servant_cls"] is not None
+    
+    def create_team(self, start, end):
+        team = Team()
+        # 添加指定index的式神
+        for i in range(start, end + 1):
+            data_dict = self.data[str(i)]
+            if self.has_servant(data_dict):
+                team.add_member(self.create_servant(data_dict))
+        return team
+
+    def init_arena(self):
+        # 建立队伍
+        team1 = self.create_team(1, 5)
+        team1.add_member(servant_.QingMing())
+        team2 = self.create_team(6, 10)
+        # 建立竞技场
+        arena = Battle()
+        arena.add(team1, team2)
+        return arena
+    
+    def run(self):
+        arena = self.init_arena()
+        return arena.run()

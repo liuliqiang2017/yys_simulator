@@ -1,13 +1,15 @@
 from functools import partial
 import json
 
-from my_Window import Ui_MainWindow
+from panel.my_Window import Ui_MainWindow
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from servant_set_dialog import MyDialog
-from config import SERVANT_SOURCE
+from panel.servant_set_dialog import MyDialog
+from panel.config import SERVANT_SOURCE
 
-import images
+from lib.battle import Simulate
+
+from resource import images
 
 class My_MainWindow(Ui_MainWindow):
 
@@ -62,9 +64,8 @@ class My_MainWindow(Ui_MainWindow):
 
     def add_servant_to(self, location_num):
         "在num指定的位置添加新式神"
-        # TODO, 载入data时还需要改进
         # 弹出添加式神面板，如果有data了就载入，否则空面板
-        if not self.servant_data[str(location_num)]["servant_cls"]:
+        if not self.has_servant(location_num):
             res = self.create_set_panel()
         else:
             res = self.create_set_panel(self.servant_data[str(location_num)])
@@ -143,11 +144,18 @@ class My_MainWindow(Ui_MainWindow):
     def start_to_run(self):
         "运行模拟"
         self.statusBar.showMessage("模拟开始,运算中...")
-        # TODO 根据data中存储的数据生成式神
-        # TODO 建立team1，team2 ， battle。
-        # TODO battle初始化，添加两个team
-        # TODO 开始执行模拟
+        simulator = Simulate(self.servant_data)
+        # TODO 新建线程开始执行模拟
+        sim = MyThread(simulator)
+        sim.sim_over.connect(self.show_sim_result)
+        sim.start()
+        sim.wait()
         # TODO 处理返回的模拟结果，生成表格展示在弹出窗口
+
+    def show_sim_result(self, res_list):
+        if isinstance(res_list, list):
+            self.statusBar.showMessage("成功模拟出结果")
+
 
     def save_data_to_json(self):
         "把所有式神的data数据保存到json文件"
@@ -173,14 +181,21 @@ class My_MainWindow(Ui_MainWindow):
                                r'yys_teamdata',
                                r'JSON Files(*.json)')
         with open(fileName[0], "r") as f_obj:
-            data = json.load(f_obj)
-        # TODO 验证文件有效性
+            try:
+                data = json.load(f_obj)
+            except json.decoder.JSONDecodeError:
+                self.statusBar.showMessage("读取队伍失败，数据损坏")
+                return
+    
         if len(data) == 10:
             # 读取json，覆盖本身的data
             self.servant_data = data
             # 重新刷新所有位置的信息
             for i in range(1, 11):
                 self.refresh_servant_display(i)
+            self.statusBar.showMessage("读取队伍成功")
+        else:
+            self.statusBar.showMessage("读取队伍失败，数据损坏")
 
     def show_help_information(self):
         "使用帮助"
@@ -189,6 +204,18 @@ class My_MainWindow(Ui_MainWindow):
     def show_soft_info(self):
         "软件信息"
         # TODO 弹出窗口，显示软件信息
+
+class MyThread(QtCore.QThread):
+
+    sim_over = QtCore.pyqtSignal(list)
+
+    def __init__(self, task):
+        super().__init__()
+        self.task = task
+
+    def run(self):
+        self.sim_over.emit(self.task.run())
+
 
 if __name__ == "__main__":
     import sys

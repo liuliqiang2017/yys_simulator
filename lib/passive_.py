@@ -14,8 +14,8 @@ action: 触发过程
 """
 from functools import wraps
 from random import randint
-import buff_
-import damage_
+from . import buff_
+from . import damage_
 
 # 一个单例装饰器
 def sington(cls):

@@ -1,5 +1,5 @@
 "存储一些式神的初始数据"
-import passive_
+from . import passive_
 
 BOSS_DUMMY = {"base_atk" : 3000,
               "base_def" : 300,

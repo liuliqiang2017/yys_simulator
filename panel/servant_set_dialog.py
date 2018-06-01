@@ -1,9 +1,8 @@
-from servant_data_set import Ui_Dialog
-from PyQt5.QtWidgets import QDialog
+from .servant_data_set import Ui_Dialog
+from PyQt5 import QtWidgets
+from .config import SERVANT_SOURCE, YUHUN_SOURCE
 
-from config import SERVANT_SOURCE, YUHUN_SOURCE
-
-class MyDialog(QDialog, Ui_Dialog):
+class MyDialog(QtWidgets.QDialog, Ui_Dialog):
 
     def __init__(self,parent=None):
         super().__init__(parent)

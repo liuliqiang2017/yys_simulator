@@ -91,7 +91,7 @@ class RealDamage(Damage):
     def config(self):
         self.name = "真实伤害"
         self.passive = False
-        from passive_ import BadThing, HeartEye
+        from .passive_ import BadThing, HeartEye
         self.check = [BadThing(), HeartEye()]
     
 

@@ -4,8 +4,8 @@
 from collections import defaultdict
 from random import choice
 
-import servant_base
-import skill_
+from . import servant_base
+from . import skill_
 
 class MemberDead(Exception):
     "成员死亡异常"
@@ -16,13 +16,13 @@ class ServantData:
     def __init__(self, data_dict, owner):
         super().__init__()
         self.owner = owner
-        self.max_hp = data_dict["hp"]
+        self.max_hp = float(data_dict["hp"])
         self.hp = self.max_hp
-        self.speed = data_dict["speed"]
-        self.atk = data_dict["atk"]
-        self.def_ = data_dict["def_"]
-        self.cri = data_dict["cri"]
-        self.criDM = data_dict["criDM"]
+        self.speed = float(data_dict["speed"])
+        self.atk = float(data_dict["atk"])
+        self.def_ = float(data_dict["def_"])
+        self.cri = float(data_dict["cri"])
+        self.criDM = float(data_dict["criDM"])
         self.set_extra_status()
 
     def set_base_data(self, base_data):
@@ -389,7 +389,7 @@ class QingMing(Servant):
         return False
     
     def ai_act(self):
-        from buff_ import Xing
+        from . buff_ import Xing
         if self.has_buff(Xing):
             self.skill_2(self)
         else:
