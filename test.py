@@ -36,7 +36,7 @@ def main():
     bat = battle.Battle()
     bat.add(team1, team2)
 
-    result = bat.run(600)
+    result = bat.run()
     print(result)
 
 if __name__ == '__main__':

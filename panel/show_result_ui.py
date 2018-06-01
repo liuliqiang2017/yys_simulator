@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(690, 522)
+        Dialog.setFixedSize(685, 500)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
         Dialog.setFont(font)
@@ -35,6 +35,7 @@ class Ui_Dialog(object):
         self.table_total.setRowCount(0)
         self.table_total.setObjectName("table_total")
         self.table_total.setColumnCount(5)
+        self.table_total.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         item = QtWidgets.QTableWidgetItem()
         self.table_total.setHorizontalHeaderItem(0, item)
         item = QtWidgets.QTableWidgetItem()

@@ -163,6 +163,8 @@ class My_MainWindow(Ui_MainWindow):
         # 遍历team1中的成员，将数据填充到对应的单元格，TODO 连接好trigger
         for each in res_list[1]:
             result.set_table_row(each)
+        for each in res_list[2]:
+            result.set_table_row(each)
         # 调用exec_()显示窗口
         result.exec_()
 
