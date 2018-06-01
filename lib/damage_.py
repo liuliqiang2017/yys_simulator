@@ -64,7 +64,7 @@ class Counter_Damage(NormalDamage):
 
 # TODO 伤害结算方式
 class IndirectDamage(Damage):
-    "间接伤害，计算防，不触发双方被动"
+    "间接伤害，计算防，不触发双方御魂，触发被动"
     def config(self):
         self.name = "间接伤害"
         self.passive = False
