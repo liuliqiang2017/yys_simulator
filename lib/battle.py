@@ -61,12 +61,16 @@ class Team:
         if self.pet is pet:
             self.pet = None
             self.remove_member(pet)
+    
+    def get_result(self):
+        return [each.recorder.get_result() for each in self.members]
 
 class Battle:
     "战斗类"
     def __init__(self):
         super().__init__()
         self.run_bar = None
+        self.limit = 3600
         self.timer = 0
         self._ready = []
     
@@ -86,8 +90,14 @@ class Battle:
     def add_showtime(self, time):
         self.timer += time
     
-    def run(self, time=360000):
-        while self.timer < time and self.team1.alive_members() and self.team2.alive_members():
+    def who_win(self):
+        return bool(self.team1.alive_members()) if self.timer < self.limit else None
+
+    def get_result(self):
+        return [self.who_win(), self.team1.get_result(), self.team2.get_result(), self.timer]
+    
+    def run(self):
+        while self.timer < self.limit and self.team1.alive_members() and self.team2.alive_members():
 
             while self._ready:
                 self._ready.sort(key=lambda x:x.status.get_speed())
@@ -101,14 +111,7 @@ class Battle:
                     if member.location >= self.run_bar:
                         self._ready.append(member)
 
-        # if self.timer < time:
-        #     if self.team1.alive_members():
-        #         print("team1获胜，总计用时", self.timer)
-        #     else:
-        #         print("team2获胜，总计用时", self.timer)
-        # for each in self.members:
-        #     print(each.recorder.get_result())
-        return [each.recorder.get_result() for each in self.members]
+        return self.get_result()
 
 """
 实现式神的不同行动方式，正常回合，反击，伪回合。

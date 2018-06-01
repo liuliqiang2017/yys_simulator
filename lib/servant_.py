@@ -145,24 +145,32 @@ class ServantHelper(PassiveManage):
 class Statistic:
     "伤害统计类"
     def __init__(self, owner):
-        self.owner = owner
-        self.record = defaultdict(int)
+        self.record = dict(
+            name=owner.name,
+            round=0,
+            show_time=0.0,
+            skill_times=defaultdict(int),
+            total_damage=0,
+            max_damage=0,
+            skill_damage=defaultdict(float),
+            damage_defender=defaultdict(float)
+        )
     
     def add_damage(self, damage):
         self.record["total_damage"] += damage.val
-        self.record[damage.name] += damage.val
-        self.record["对"+damage.defer.name+"伤害"] += damage.val
-        if self.record["最大单次伤害"] < damage.val:
-            self.record["最大单次伤害"] = damage.val
+        self.record["skill_damage"][damage.name] += damage.val
+        self.record["damage_defender"][damage.defer.name] += damage.val
+        if self.record["max_damage"] < damage.val:
+            self.record["max_damage"] = damage.val
     
     def add_skill(self, skill_name, num=1):
-        self.record[skill_name + "次数"] += 1
+        self.record["skill_times"][skill_name] += 1
     
     def add_round(self, num=1):
         self.record["round"] += num
     
     def add_showtime(self, time):
-        self.record["showtime"] += time
+        self.record["show_time"] += time
     
     def get_result(self):
         return self.record

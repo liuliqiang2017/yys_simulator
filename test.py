@@ -1,7 +1,7 @@
 "测试模块"
-from . import battle
-from . import servant_
-from .passive_ import Needle, BadThing, LuckyCat, NetCut
+from lib import battle
+from lib import servant_
+from lib.passive_ import Needle, BadThing, LuckyCat, NetCut
 
 def main():
     atk_dict = {"hp":28681, "atk":3427, "cri":100, "criDM":231, "speed":125, "def_":567, "yuhun":[], "name": "书翁"}
@@ -36,7 +36,8 @@ def main():
     bat = battle.Battle()
     bat.add(team1, team2)
 
-    bat.run(600)
+    result = bat.run(600)
+    print(result)
 
 if __name__ == '__main__':
     import cProfile
