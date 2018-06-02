@@ -80,5 +80,5 @@ class Ui_Dialog(object):
         item.setText(_translate("Dialog", "动画时间"))
         item = self.table_total.horizontalHeaderItem(4)
         item.setText(_translate("Dialog", "最大伤害"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_total), _translate("Dialog", "战斗概况"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_total), _translate("Dialog", "战斗概况-双击式神名字显示详细信息"))
 

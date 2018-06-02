@@ -158,6 +158,7 @@ class Ui_Dialog(object):
         self.horizontalLayout_17.setObjectName("horizontalLayout_17")
         self.servant_atk = QtWidgets.QLineEdit(self.widget_10)
         self.servant_atk.setText("")
+        self.servant_atk.setInputMethodHints(QtCore.Qt.ImhPreferNumbers)
         self.servant_atk.setObjectName("servant_atk")
         self.horizontalLayout_17.addWidget(self.servant_atk)
         self.horizontalLayout_3.addWidget(self.widget_10)

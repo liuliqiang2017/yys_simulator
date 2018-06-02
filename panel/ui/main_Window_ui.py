@@ -1521,7 +1521,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "阴阳师对战模拟器ver1.0"))
         self.bt_add1.setText(_translate("MainWindow", "添加式神"))
         self.bt_remove1.setText(_translate("MainWindow", "删除式神"))
         self.bt_add2.setText(_translate("MainWindow", "添加式神"))

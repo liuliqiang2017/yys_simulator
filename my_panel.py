@@ -1,11 +1,10 @@
 from functools import partial
 import json
 
-from panel.main_Window_ui import Ui_MainWindow
+from panel.ui.main_Window_ui import Ui_MainWindow
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from panel.servant_set import ServantSet
-from panel.show_result import ShowResult
+from panel.show_sub_panel import ServantSet, ShowResult, ShowHelp ,ShowSoft
 from panel.config import SERVANT_SOURCE
 
 from lib.battle import Simulate
@@ -212,11 +211,11 @@ class My_MainWindow(Ui_MainWindow):
 
     def show_help_information(self):
         "使用帮助"
-        # TODO 弹出窗口，显示使用帮助
+        ShowHelp().exec_()
     
     def show_soft_info(self):
         "软件信息"
-        # TODO 弹出窗口，显示软件信息
+        ShowSoft().exec_()
 
 class MyThread(QtCore.QThread):
 
