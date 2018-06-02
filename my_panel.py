@@ -24,6 +24,8 @@ class My_MainWindow(Ui_MainWindow):
         self.set_all_backgourd()
         self.set_trigger_connect()
         self.statusBar.showMessage('这里是状态栏...')
+        my_icon = QtGui.QIcon(":/vs.png")
+        MainWindow.setWindowIcon(my_icon)
         
 
     def set_all_backgourd(self):
