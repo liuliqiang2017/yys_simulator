@@ -26,6 +26,9 @@ class My_MainWindow(Ui_MainWindow):
         self.statusBar.showMessage('这里是状态栏...')
         my_icon = QtGui.QIcon(":/vs.png")
         MainWindow.setWindowIcon(my_icon)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        MainWindow.setFont(font)
         
 
     def set_all_backgourd(self):
