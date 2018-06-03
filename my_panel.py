@@ -11,7 +11,7 @@ from lib.battle import Simulate
 
 from resource import images
 
-class My_MainWindow(Ui_MainWindow):
+class base_MainWindow(Ui_MainWindow):
 
     def __init__(self):
         super().__init__()
@@ -29,7 +29,51 @@ class My_MainWindow(Ui_MainWindow):
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
         MainWindow.setFont(font)
-        
+    
+    def init_sevrant_data(self, location_num):
+        raise NotImplementedError
+    
+    def set_all_backgourd(self):
+        raise NotImplementedError
+    
+    def set_trigger_connect(self):
+        raise NotImplementedError
+    
+    def set_bg_pic(self, target, path):
+        target.setAutoFillBackground(True)
+        palette = QtGui.QPalette()
+        palette.setBrush(target.backgroundRole(), QtGui.QBrush(QtGui.QPixmap(path)))
+        target.setPalette(palette)
+
+    def get_head_pic(self, location_num):
+        try:
+            return SERVANT_SOURCE[self.servant_data[str(location_num)]["servant_cls"]]["head_pic"]
+        except KeyError:
+            return "wanted_nodata.jpg"
+    
+    def set_head_pic(self, location_num):
+        path = ":/" + self.get_head_pic(location_num)
+        target = getattr(self, "label" + str(location_num))
+        self.set_bg_pic(target, path)
+    
+    def has_servant(self, location_num):
+        return self.servant_data[str(location_num)]["servant_cls"]
+    
+    def get_servant_data(self, location_num):
+        return self.servant_data[str(location_num)]    
+    
+    def lock_bt(self, location_num):
+        getattr(self, "bt_remove" + str(location_num)).setEnabled(False)
+        getattr(self, "bt_add" + str(location_num)).setText('添加式神')
+    
+    def release_bt(self, location_num):
+        getattr(self, "bt_remove" + str(location_num)).setEnabled(True)
+        getattr(self, "bt_add" + str(location_num)).setText('修改式神')
+    
+
+
+
+class My_MainWindow(base_MainWindow):        
 
     def set_all_backgourd(self):
         "设置所有背景图片"
@@ -40,12 +84,6 @@ class My_MainWindow(Ui_MainWindow):
         self.set_bg_pic(self.team2_leader, ":/guiwang.jpg")
         for i in range(1, 11):
             self.refresh_servant_display(i)
-
-    def set_bg_pic(self, target, path):
-        target.setAutoFillBackground(True)
-        palette = QtGui.QPalette()
-        palette.setBrush(target.backgroundRole(), QtGui.QBrush(QtGui.QPixmap(path)))
-        target.setPalette(palette)
 
     def set_trigger_connect(self):
         "设置所有的联动" 
@@ -98,32 +136,6 @@ class My_MainWindow(Ui_MainWindow):
         else:
             self.set_head_pic(location_num)
             self.lock_bt(location_num)
-    
-    def get_head_pic(self, location_num):
-        try:
-            return SERVANT_SOURCE[self.servant_data[str(location_num)]["servant_cls"]]["head_pic"]
-        except KeyError:
-            return "wanted_nodata.jpg"
-    
-    def set_head_pic(self, location_num):
-        path = ":/" + self.get_head_pic(location_num)
-        target = getattr(self, "label" + str(location_num))
-        self.set_bg_pic(target, path)
-    
-    def has_servant(self, location_num):
-        return self.servant_data[str(location_num)]["servant_cls"]
-    
-    def get_servant_data(self, location_num):
-        return self.servant_data[str(location_num)]
-    
-    
-    def lock_bt(self, location_num):
-        getattr(self, "bt_remove" + str(location_num)).setEnabled(False)
-        getattr(self, "bt_add" + str(location_num)).setText('添加式神')
-    
-    def release_bt(self, location_num):
-        getattr(self, "bt_remove" + str(location_num)).setEnabled(True)
-        getattr(self, "bt_add" + str(location_num)).setText('修改式神')
 
     def init_sevrant_data(self, location_num):
         "恢复式神数据到初始状态"
