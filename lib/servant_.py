@@ -175,7 +175,7 @@ class Statistic:
     def get_result(self):
         return self.record
 
-class Servant:
+class baseServant:
     "式神基类"
     def __init__(self, data_dict):
         super().__init__()
@@ -194,7 +194,9 @@ class Servant:
         self.passive = ServantPassive()
         self.yuhun = ServantYuHun()
         self.helper = ServantHelper()
-    
+
+class Servant(baseServant):
+    "普通式神类"    
     def config(self, base=servant_base.BOSS_DUMMY):
         "由子类实现不同的初始设置，以下是个例子"
         # 初始化式神的基础属性
@@ -269,6 +271,7 @@ class Servant:
             self.status.hp_change(self.status.shield - damage.val)
         else:
             self.status.shield -= damage.val
+
 
 class BigDog(Servant):
     "大天狗"
