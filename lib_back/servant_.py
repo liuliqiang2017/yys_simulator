@@ -89,9 +89,8 @@ class ServantData:
     def get_hp_percent(self):
         return self.hp / self.get_max_hp()
 
-# TODO 式神被动御魂管理类
-class PassiveManage:
-    "被动，御魂等管理类"
+class basePassive:
+    "被动，御魂等管理基类"
     def __init__(self):
         super().__init__()
         self.pre_round = []
@@ -129,15 +128,15 @@ class PassiveManage:
     def action_by_hit(self, target):
         self.stimulate(target, self.by_hit)
 
-class ServantPassive(PassiveManage):
+class ServantPassive(basePassive):
     "式神被动"
     pass
 
-class ServantYuHun(PassiveManage):
+class ServantYuHun(basePassive):
     "式神御魂"
     pass
 
-class ServantHelper(PassiveManage):
+class ServantHelper(basePassive):
     "式神的其他触发，比如记仇，土蜘蛛等"
     pass
 
