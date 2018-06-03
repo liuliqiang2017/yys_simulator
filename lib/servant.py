@@ -4,6 +4,9 @@
 from collections import defaultdict
 from random import choice
 
+from . import servant_base_data
+from . import skill_
+
 class MemberDead(Exception):
     "成员死亡异常"
     pass
@@ -13,6 +16,7 @@ class ServantData:
     def __init__(self, owner):
         super().__init__()
         self.owner = owner
+        self.set_base_data()
         self.set_extra_status()
     
     def set_servant_status(self, data_dict):
@@ -23,15 +27,22 @@ class ServantData:
         self.def_ = float(data_dict["def_"])
         self.cri = float(data_dict["cri"])
         self.criDM = float(data_dict["criDM"])
+        # 导入御魂信息
+        for yh in data_dict["yuhun"]:
+            yh(self).add(self)
 
-    def set_base_data(self, base_data):
+    def set_base_data(self):
         "导入式神的基础属性"
+        base_data = getattr(servant_base_data, self.owner.__class__.__name__)
         self.base_atk = base_data["base_atk"]
         self.base_def = base_data["base_def"]
         self.base_speed = base_data["base_speed"]
         self.base_cri = base_data["base_cri"]
         self.base_criDM = base_data["base_criDM"]
         self.base_max_hp = base_data["base_max_hp"]
+        # 导入被动技能
+        for passive_skill in base_data["passive"]:
+            passive_skill(self.owner).add(self.owner)
     
     def set_extra_status(self):
         "重置自身的附加属性"
@@ -146,15 +157,29 @@ class PassiveManage:
 
 class ServantPassive(PassiveManage):
     "式神被动"
-    pass
+    
+    def add_passive(self, passive):
+        self.add(passive)
+    
+    def remove_passive(self, passive):
+        self.remove(passive)
 
 class ServantYuHun(PassiveManage):
     "式神御魂"
-    pass
+    def add_yuhun(self, yuhun):
+        self.add(yuhun)
+    
+    def remove_yuhun(self, yuhun):
+        self.remove(yuhun)
 
 class ServantHelper(PassiveManage):
     "式神的其他触发，比如记仇，土蜘蛛等"
-    pass
+    
+    def add_helper(self, helper):
+        self.add(helper)
+    
+    def remove_helper(self, helper):
+        self.remove(helper)
 
 class Statistic:
 
@@ -192,54 +217,254 @@ class Statistic:
 
 
 class baseServant:
-    "式神基类"
+    "式神类基类"
+    
+    def __init__(self):
+        super().__init__()
+        self.status = ServantData(self)
+        self.recorder = Statistic(self)
+        self.yuhun = ServantYuHun()
+        self.beidong = ServantPassive()
+        self.helper = ServantHelper()
+        self.location = 0
+        self.immune = False
+        self.team = None
+        self.enemy = None
+        self.set_skills()
+        self.config()
 
+    def __getattr__(self, attr):
+        "委托模式，把一些方法委托给子组件完成"
+        get_route = ("status", "recorder", "yuhun", "beidong", "helper")
+        for position in get_route:
+            try:
+                return getattr(super().__getattribute__(position), attr)
+            except AttributeError:
+                continue
+        raise AttributeError("'{}' object has no attribute '{}'".format(self.__class__.__name__, attr))
+    
+    def set_skills(self):
+        raise NotImplementedError
+    
+    def config(self):
+        raise NotImplementedError
+
+    def is_alive(self):
+        return self.status.hp > 0
+    
+    def move(self, distance=None):
+        self.location += distance if distance else self.status.get_speed()
+
+class Servant(baseServant):
+    "式神类"
     def __init__(self, data_dict):
         super().__init__()
         self.data_dict = data_dict
+        self.status.set_servant_status(data_dict)
         self.name = data_dict.get("name", "未命名")
-        self.status = ServantData(self)
-        self.recorder = Statistic(self)
+        self.location = self.status.get_speed()
+        self.classify = "式神"
     
-    def get_atk_data(self):
-        return self.status.get_atk_data()
-    
-    def get_def_data(self):
-        return self.status.get_def_data()
-    
-    def get_speed(self):
-        return self.status.get_speed()
+    def set_skills(self):
+        self.skill_1 = skill_.ServantSkill1(self)
+        self.skill_3 = skill_.ServantSkill3(self)
 
-    def get_hp_percent(self):
-        return self.status.get_hp_percent()
+    def trigger(self, target, *, flag):
+        getattr(self.passive, flag)(target)
+        getattr(self.yuhun, flag)(target)
+        getattr(self.helper, flag)(target)
     
-    def get_max_hp(self):
-        return self.status.get_max_hp()
+    def ai_act(self):
+        "自动战斗时的ai，此处是最基础的3火开大ai"
+        target = self.enemy.best_choice()
+        if target:                
+            if self.team.energe >= self.skill_3.cost:
+                self.skill_3(target)
+            else:
+                self.skill_1(target)
     
-    def change_damage_ratio(self, ratio_num):
-        return self.status.change_damage_ratio(ratio_num)
+    def counter(self, target):
+        "反击，默认用一技能反击"
+        self.assist(target)
     
-    def change_hurt_ratio(self, ratio_num):
-        return self.status.change_hurt_ratio(ratio_num)
+    def assist(self, target):
+        "协战，默认用一技能协战"
+        if target.is_alive():
+            self.skill_1(target)
+        else:
+            if self.enemy.alive_members():
+                self.skill_1(choice(self.enemy.alive_members()))
+        
+    def defend(self, damage):
+        # 结算伤害
+        self.damage_apply(damage)
+        # 受攻击后的被动触发判定
+        if damage.trigger:
+            self.trigger(damage, flag="action_by_hit")
     
-    def change_atk_ratio(self, ratio_num):
-        return self.status.change_atk_ratio(ratio_num)
+    def damage_apply(self, damage):
+        if damage.val > self.status.shield:
+            self.status.shield = 0
+            self.status.hp_change(self.status.shield - damage.val)
+        else:
+            self.status.shield -= damage.val
 
-    def change_def_ratio(self, ratio_num):
-        return self.status.change_def_ratio(ratio_num)
+
+# 以下是一些式神
+class BigDog(Servant):
+    "大天狗"
+
+    def set_skills(self):
+        self.skill_1 = skill_.BigDogSKill1(self)
+        self.skill_3 = skill_.BigDogSKill3(self)
+
+class Bird(Servant):
+    "姑获鸟"
     
-    def recorder_add_damage(self, damage):
-        return self.recorder.recorder_add_damage(damage)
+    def set_skills(self):
+        self.skill_1 = skill_.BirdSkill1(self)
+        self.skill_3 = skill_.BirdSkill3(self)
 
-    def recorder_add_skill(self, skill_name):
-        return self.recorder.recorder_add_skill(skill_name)
+class WineKing(Servant):
+    "酒吞"
+    def config(self):
+        self.wine = 0
+    
+    def ai_act(self):
+        targets = self.enemy.alive_members()
+        if targets:
+            target = max(targets, key=lambda x:x.status.get_hp_percent())
+            self.skill_1(target)
+    
+    def set_skills(self):
+        self.skill_1 = skill_.WineKingSkill1(self)
+    
+    def assist(self, target):
+        temp = self.wine
+        self.wine = 0
+        super().assist(target)
+        self.wine = temp
 
-    def recorder_add_round(self):
-        return self.recorder.recorder_add_round()
+class LuSheng(Servant):
+    "陆生"
+    
+    def set_skills(self):
+        self.skill_1 = skill_.LuShengSkill1(self)
+        self.skill_3 = skill_.LuShengSkill3(self)
 
-    def recorder_add_showtime(self, time):
-        return self.recorder.recorder_add_showtime(time)
+class YuZaoQian(Servant):
+    "玉藻前"
+    def config(self):
+        self.status.def_break = 100
 
-    def recorder_get_result(self):
-        return self.recorder.recorder_get_result()
+    def ai_act(self):
+        targets = self.enemy.alive_members()
+        if targets:                
+            if self.team.energe >= self.skill_3.cost:
+                if len(targets) > 1:
+                    self.skill_3(choice(targets))
+                else:
+                    self.skill_2(targets[0])
+            else:
+                self.skill_1(choice(targets))
+    
+    def set_skills(self):
+        self.skill_1 = skill_.YuZaoQianSkill1(self)
+        self.skill_2 = skill_.YuZaoQianSkill2(self)
+        self.skill_3 = skill_.YuZaoQianSkill3(self)
+        self.skill_2_combo = skill_.YuZaoQianSkill2Combo(self)
+        self.skill_3_combo = skill_.YuZaoQianSkill3Combo(self)
 
+class ShuWeng(Servant):
+    "书翁"
+    
+    def set_skills(self):
+        self.skill_1 = skill_.ShuWengSkill1(self)
+        self.skill_3 = skill_.ShuWengSkill3(self)
+
+class UglyGirl(Servant):
+    "丑女"
+
+    def set_skills(self):
+        self.skill_1 = skill_.UglyGirlSkill1(self)
+        self.skill_3 = skill_.UglyGirlSkill3(self)
+    
+    def ai_act(self):
+        if self.enemy.pet:
+            self.skill_1(self.enemy.best_choice())
+        else:
+            super().ai_act()
+    
+class Peach(Servant):
+    "桃子"
+    
+    def set_skills(self):
+        self.skill_1 = skill_.PeachSkill1(self)
+        self.skill_3 = skill_.PeachSkill3(self)
+
+class QingMing(Servant):
+    "晴明"
+    def __init__(self):
+        data = {"hp":27140, "atk":6382, "cri":0, "criDM":150, "speed":128, "def_":1051, "yuhun":[], "name": "晴明"}
+        super().__init__(data)
+    
+    def set_skills(self):
+        self.skill_1 = skill_.QingMingSkill1(self)
+        self.skill_2 = skill_.QingMingSkill2(self)
+        self.skill_3 = skill_.QingMingSkill3(self)
+    
+    def has_buff(self, buff):
+        for each in self.status_buff:
+            if isinstance(each, buff):
+                return True
+        return False
+    
+    def ai_act(self):
+        from . buff_ import Xing
+        if self.has_buff(Xing):
+            self.skill_2(self)
+        else:
+            self.skill_3(self)
+
+# 召唤物等
+class basePet(Servant):
+    "宠物类基类"
+
+    def create(self):
+        raise NotImplementedError
+
+    def remove(self):
+        raise NotImplementedError
+
+class Scarecrow(basePet):
+    "丑女的草人"
+    def __init__(self, owner, target):
+        self.owner = owner
+        self.target = target
+        data_dict = self.make_data_dict(target)
+        super().__init__(data_dict)
+        self.round_num = 2
+        self.location = 0
+    
+    def make_data_dict(self, target):
+        data_dict = target.data_dict
+        data_dict["name"] = "草人"
+        data_dict["hp"] = target.status.get_max_hp() * 0.3
+        data_dict["speed"] = target.status.get_speed()
+        data_dict["def_"] = target.status.def_ * 0.5
+        return data_dict
+    
+    def config(self):
+        self.classify = "召唤物"
+        self.create()
+    
+    def ai_act(self):
+        "草人什么也不干"
+        pass
+    
+    def create(self):
+        self.target.team.add_pet(self)
+    
+    def remove(self):
+        self.target.team.remove_pet(self)
+        self.status.hp = -1

@@ -100,11 +100,11 @@ class basePassive:
         self.by_hit = []
 
     def add(self, passive):
-        self.__dict__[passive.position].append(passive)
+        getattr(self, passive.position).append(passive)
     
     def remove(self, passive):
         try:
-            self.__dict__[passive.position].remove(passive)
+            getattr(self, passive.position).remove(passive)
         except ValueError:
             pass
     
