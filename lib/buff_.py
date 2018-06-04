@@ -69,10 +69,10 @@ class Xing(StatusBuff):
         self.layer = 3
     
     def _valid(self):
-        self.target.status.damage_ratio += 0.3
+        self.target.change_damage_ratio(+0.3)
     
     def _invalid(self):
-        self.target.status.damage_ratio -= 0.3
+        self.target.change_damage_ratio(-0.3)
 
 class Mie(StatusDebuff):
     "晴明灭, ID 101"
@@ -82,10 +82,10 @@ class Mie(StatusDebuff):
         self.layer = 3
     
     def _valid(self):
-        self.target.status.harm_ratio += 0.3
+        self.target.change_harm_ratio(+0.3)
     
     def _invalid(self):
-        self.target.status.harm_ratio -= 0.3
+        self.target.change_harm_ratio(-0.3)
 
 class SteelMao(StatusBuff):
     "天狗的钢铁毛 ID 102"
@@ -95,12 +95,12 @@ class SteelMao(StatusBuff):
         self.layer = 1
     
     def _valid(self):
-        self.target.status.atk_ratio += 0.15
-        self.target.status.criDM += 15
+        self.target.change_atk_ratio(0.15)
+        self.target.change_extra_criDM(15)
     
     def _invalid(self):
-        self.target.status.atk_ratio -= 0.15
-        self.target.status.criDM -= 15
+        self.target.change_atk_ratio(-0.15)
+        self.target.change_extra_criDM(-15)
 
 class CurseFire(StatusDebuff):
     "丑女咒火 ID 103"
@@ -110,10 +110,10 @@ class CurseFire(StatusDebuff):
         self.layer = 2
     
     def _valid(self):
-        self.target.status.harm_ratio += 0.15
+        self.target.change_harm_ratio(+0.15)
     
     def _invalid(self):
-        self.target.status.harm_ratio -= 0.15
+        self.target.change_harm_ratio(-0.15)
 
 class FuriousEyes(StatusDebuff):
     "两面佛怒目 ID 104"
@@ -123,12 +123,12 @@ class FuriousEyes(StatusDebuff):
         self.layer = 2
     
     def _valid(self):
-        self.target.status.atk_ratio -= 0.16
-        self.target.status.def_ratio -= 0.16
+        self.target.change_atk_ratio(0.16)
+        self.target.change_def_ratio(0.16)
     
     def _invalid(self):
-        self.target.status.atk_ratio += 0.16
-        self.target.status.def_ratio += 0.16
+        self.target.change_atk_ratio(-0.16)
+        self.target.change_def_ratio(-0.16)
 
 class Fear(StatusBuff):
     "陆生的畏 ID 105"
@@ -138,10 +138,10 @@ class Fear(StatusBuff):
         self.layer = 4
     
     def _valid(self):
-        self.target.status.damage_ratio += 0.75
+        self.target.change_damage_ratio(+0.75)
     
     def _invalid(self):
-        self.target.status.damage_ratio -= 0.75
+        self.target.change_damage_ratio(-0.75)
 
 class IndirectDM(baseBuff):
     "间接伤害buff ID为特有数字99"

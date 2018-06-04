@@ -31,8 +31,8 @@ class baseSKill:
         
     
     def record(self):
-        self.owner.recorder.add_showtime(time=self.showtime)
-        self.owner.recorder.add_skill(self.name)
+        self.owner.recorder_add_showtime(time=self.showtime)
+        self.owner.recorder_add_skill(self.name)
         self.owner.team.arena.add_showtime(time=self.showtime)
 
     def action(self, target):
@@ -281,7 +281,7 @@ class UglyGirlSkill3(baseSKill):
         self.showtime = 3
     
     def action(self, target):
-        from .servant_ import Scarecrow
+        from .servant import Scarecrow
         if target.team.pet is None:
             pet = Scarecrow(self.owner, target)
             pet.config()
@@ -302,9 +302,9 @@ class PeachSkill3(baseSKill):
         self.cost = 2
         self.factor = 0
         self.showtime = 2.5
-        self.distance = self.owner.team.arena.run_bar * 0.25
     
     def action(self, target):
+        self.distance = self.owner.team.arena.run_bar * 0.25
         for each in self.owner.team.alive_members():
             self.pull_one(each)
 

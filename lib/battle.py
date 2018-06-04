@@ -1,6 +1,6 @@
 "队伍相关，包括队伍创建。战斗相关，包括行动条，鬼火条，大宝剑，双方队伍的维护"
 from random import choice
-from . import servant_
+from . import servant
 from . import passive_
 from . import config
 
@@ -37,7 +37,7 @@ class Team:
             return choice(self.alive_members())
     
     def best_choice(self):
-        if isinstance(self.pet, servant_.Scarecrow):
+        if isinstance(self.pet, servant.Scarecrow):
             return self.pet
         return self.random_member()
     
@@ -63,7 +63,7 @@ class Team:
             self.remove_member(pet)
     
     def get_result(self):
-        return [each.recorder.get_result() for each in self.members]
+        return [each.recorder_get_result() for each in self.members]
 
 class Battle:
     "战斗类"
@@ -84,8 +84,6 @@ class Battle:
         self.members = team1.members + team2.members
         self.members.sort(key=lambda x:x.status.get_speed(), reverse=True)
         self.run_bar = self.members[0].status.get_speed() * 30
-        for each in self.members:
-            each.config()
     
     def add_showtime(self, time):
         self.timer += time
@@ -134,7 +132,7 @@ class PreAction(Handler):
         if not self.actor.is_alive():
             return
         # 记录行动次数
-        self.actor.recorder.add_round()
+        self.actor.recorder_add_round()
         # 行动条重置为0
         self.actor.location = 0
         # 结算回合前触发的各种东西
@@ -238,7 +236,7 @@ class Simulate:
     def init_arena(self):
         # 建立队伍
         team1 = self.create_team(1, 5)
-        team1.add_member(servant_.QingMing())
+        team1.add_member(servant.QingMing())
         team2 = self.create_team(6, 10)
         # 建立竞技场
         arena = Battle()

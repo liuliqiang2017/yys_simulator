@@ -39,7 +39,7 @@ class Damage:
         # 生效伤害
         self.defer.defend(self)
         # 传递给攻击者的记录器
-        self.atker.recorder.add_damage(self)
+        self.atker.recorder_add_damage(self)
 
     def _cri_check(self):
         if randint(1, 1000) <= self.data_dict["cri"] * 10:
@@ -105,7 +105,7 @@ class RealDamage(Damage):
         # 生效伤害
         self.defer.defend(self)
         # 传递给攻击者的记录器
-        self.atker.recorder.add_damage(self)
+        self.atker.recorder_add_damage(self)
     
     def calculate(self, data_dict):
         return self.base_val

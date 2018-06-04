@@ -16,10 +16,10 @@ class ServantData:
     def __init__(self, owner):
         super().__init__()
         self.owner = owner
-        self.set_base_data()
         self.set_extra_status()
     
     def set_servant_status(self, data_dict):
+        self.set_base_data()
         self.max_hp = float(data_dict["hp"])
         self.hp = self.max_hp
         self.speed = float(data_dict["speed"])
@@ -29,7 +29,7 @@ class ServantData:
         self.criDM = float(data_dict["criDM"])
         # 导入御魂信息
         for yh in data_dict["yuhun"]:
-            yh(self).add(self)
+            yh(self.owner).add(self.owner)
 
     def set_base_data(self):
         "导入式神的基础属性"
@@ -103,7 +103,7 @@ class ServantData:
         "改变攻击伤害比率"
         self.damage_ratio += ratio_num
 
-    def change_hurt_ratio(self, ratio_num):
+    def change_harm_ratio(self, ratio_num):
         "改变承伤比率"
         self.harm_ratio += ratio_num
     
@@ -114,6 +114,10 @@ class ServantData:
     def change_def_ratio(self, ratio_num):
         "改变基础防御力"
         self.def_ratio += ratio_num
+    
+    def change_extra_criDM(self, num):
+        "改变额外暴伤"
+        self.extra_criDM += num
 
 # TODO 式神被动御魂管理类
 class PassiveManage:
@@ -221,21 +225,22 @@ class baseServant:
     
     def __init__(self):
         super().__init__()
+        self.name = ""
         self.status = ServantData(self)
         self.recorder = Statistic(self)
         self.yuhun = ServantYuHun()
-        self.beidong = ServantPassive()
+        self.passive = ServantPassive()
         self.helper = ServantHelper()
         self.location = 0
         self.immune = False
         self.team = None
         self.enemy = None
-        self.set_skills()
         self.config()
+        self.set_skills()
 
     def __getattr__(self, attr):
         "委托模式，把一些方法委托给子组件完成"
-        get_route = ("status", "recorder", "yuhun", "beidong", "helper")
+        get_route = ("status", "recorder", "yuhun", "passive", "helper")
         for position in get_route:
             try:
                 return getattr(super().__getattribute__(position), attr)
@@ -264,6 +269,10 @@ class Servant(baseServant):
         self.name = data_dict.get("name", "未命名")
         self.location = self.status.get_speed()
         self.classify = "式神"
+        self.status_buff = []
+    
+    def config(self):
+        pass
     
     def set_skills(self):
         self.skill_1 = skill_.ServantSkill1(self)
