@@ -106,6 +106,16 @@ class DrinkByHit(PassiveSkill):
             damage.defer.wine += 1
 
 # TODO 御魂：土蜘蛛。
+
+@sington
+class NoneYuHun(YuHun):
+    "空御魂，无效果"
+    def config(self):
+        pass
+
+    def add(self, target):
+        pass
+
 @sington
 class Needle(YuHun):
     "针女"

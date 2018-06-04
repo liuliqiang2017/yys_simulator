@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
-from .config import SERVANT_SOURCE, YUHUN_SOURCE
+from .config import SERVANT_SOURCE, YUHUN_SOURCE, YUHUN_01_SOURCE
 from .ui import show_help_info_ui, servant_set_ui, show_detail_ui, show_result_ui, show_soft_info_ui
 
 class ShowHelp(QtWidgets.QDialog, show_help_info_ui.Ui_Dialog):
@@ -33,7 +33,9 @@ class ServantSet(QtWidgets.QDialog, servant_set_ui.Ui_Dialog):
                      servant_hp=self.servant_hp.text(), 
                      servant_cri=self.servant_cri.text(),
                      servant_cridm=self.servant_cridm.text(),
-                     servant_yuhun=self.servant_yuhun.currentText())
+                     servant_yuhun=self.servant_yuhun.currentText(),
+                     servant_yuhun_01=self.servant_yuhun_01.currentText()
+                     )
         return data
     
     def input_limit(self):
@@ -69,12 +71,16 @@ class ServantSet(QtWidgets.QDialog, servant_set_ui.Ui_Dialog):
         self.servant_cri.setText(data["servant_cri"])
         self.servant_cridm.setText(data["servant_cridm"])
         self.servant_yuhun.setCurrentIndex(YUHUN_SOURCE[data["servant_yuhun"]]["cls_index"])
+        if "servant_yuhun_01" in data:
+            self.servant_yuhun_01.setCurrentIndex(YUHUN_SOURCE[data["servant_yuhun_01"]]["cls_index"])
 
     def set_combobox(self):
         for key in SERVANT_SOURCE.keys():
             self.servant_cls.addItem(key)
         for key in YUHUN_SOURCE.keys():
             self.servant_yuhun.addItem(key)
+        for key in YUHUN_01_SOURCE.keys():
+            self.servant_yuhun_01.addItem(key)
 
 class ShowDetail(QtWidgets.QDialog, show_detail_ui.Ui_Dialog):
 

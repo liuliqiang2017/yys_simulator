@@ -16,9 +16,15 @@ SERVANT_SOURCE = {
 }
 
 YUHUN_SOURCE = {
-	"破势":{"cls_index":0, "cls":"BadThing"},
-	"心眼":{"cls_index":1, "cls":"HeartEye"},
-	"针女":{"cls_index":2, "cls":"Needle"},
-	"招财猫":{"cls_index":3, "cls":"LuckyCat"},
-	"网切":{"cls_index":4, "cls":"NetCut"},
+	"无御魂":{"cls_index":0, "cls":"NoneYuHun"},
+	"破势":{"cls_index":1, "cls":"BadThing"},
+	"心眼":{"cls_index":2, "cls":"HeartEye"},
+	"针女":{"cls_index":3, "cls":"Needle"},
+	"招财猫":{"cls_index":4, "cls":"LuckyCat"},
+	"网切":{"cls_index":5, "cls":"NetCut"},
+}
+
+YUHUN_01_SOURCE = {
+	"无御魂":{"cls_index":0, "cls":"NoneYuHun"},
+	"土蜘蛛":{"cls_index":1, "cls":"DustSpider"},
 }

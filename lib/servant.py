@@ -189,8 +189,8 @@ class Statistic:
 
     "伤害统计类"
     def __init__(self, owner):
+        self.owner = owner
         self.record = dict(
-            name=owner.name,
             round=0,
             show_time=0.0,
             skill_times=defaultdict(int),
@@ -217,6 +217,7 @@ class Statistic:
         self.record["show_time"] += time
     
     def recorder_get_result(self):
+        self.record["name"] = self.owner.name
         return self.record   
 
 
@@ -264,9 +265,8 @@ class Servant(baseServant):
     "式神类"
     def __init__(self, data_dict):
         super().__init__()
-        self.data_dict = data_dict
-        self.status.set_servant_status(data_dict)
         self.name = data_dict.get("name", "未命名")
+        self.status.set_servant_status(data_dict)
         self.location = self.status.get_speed()
         self.classify = "式神"
         self.status_buff = []
@@ -456,7 +456,7 @@ class Scarecrow(basePet):
         self.location = 0
     
     def make_data_dict(self, target):
-        data_dict = target.data_dict
+        data_dict = dict(atk=0, yuhun=[], cri=0, criDM=0)
         data_dict["name"] = "草人"
         data_dict["hp"] = target.status.get_max_hp() * 0.3
         data_dict["speed"] = target.status.get_speed()

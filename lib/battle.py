@@ -210,15 +210,18 @@ class Simulate:
             criDM = data_dict["servant_cridm"],
             yuhun = []
         )
-        data["yuhun"].append(self.get_servant_yuhun(data_dict))
+
+        data["yuhun"].append(self.get_servant_yuhun(data_dict, "servant_yuhun"))
+        if "servant_yuhun_01" in data_dict:
+            data["yuhun"].append(self.get_servant_yuhun(data_dict, "servant_yuhun_01"))
         return self.get_servant_cls(data_dict)(data)
     
     def get_servant_cls(self, data_dict):    
         cls_str = config.SERVANT_SOURCE[data_dict["servant_cls"]]["cls"]
-        return eval("servant_." + cls_str)
+        return eval("servant." + cls_str)
     
-    def get_servant_yuhun(self, data_dict):        
-        yuhun_str = config.YUHUN_SOURCE[data_dict["servant_yuhun"]]["cls"]
+    def get_servant_yuhun(self, data_dict, key):
+        yuhun_str = config.YUHUN_SOURCE[data_dict[key]]["cls"]
         return eval("passive_." + yuhun_str)
     
     def has_servant(self, data_dict):
