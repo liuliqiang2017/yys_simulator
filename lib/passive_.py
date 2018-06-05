@@ -43,11 +43,11 @@ class basePassive:
         raise NotImplementedError
     
     def add(self, target):
-        self.target = target
-        target.add_passive(self)
+        raise NotImplementedError
+
     
     def remove(self):
-        self.target.remove_passive(self)
+        raise NotImplementedError
     
     def action(self):
         "触发效果，由子类实现"
@@ -58,12 +58,26 @@ class PassiveSkill(basePassive):
     def __init__(self, owner=None):
         super().__init__(owner)
         self.classify = "passive"
+    
+    def add(self, target):
+        self.target = target
+        target.add_passive(self)
+    
+    def remove(self):
+        self.target.remove_passive(self)
 
 class YuHun(basePassive):
     "御魂类"
     def __init__(self, owner=None):
         super().__init__(owner)
         self.classify = "yuhun"
+    
+    def add(self, target):
+        self.target = target
+        target.add_yuhun(self)
+
+    def remove(self):
+        self.target.remove_yuhun(self)
 
 
 class SteelFeather(PassiveSkill):
@@ -169,6 +183,17 @@ class LuckyCat(YuHun):
         if randint(1, 1000) <= 500:
             target.team.energe_change(2)
 
+class DustSpider(YuHun):
+    "土蜘蛛"
+    def config(self):
+        self.position = "post_skill"
+    
+    def action(self, damage):
+        "给对方上个helper,回合后触发"
+        helper = DustSpiderRecorder(self.owner)
+        helper.val = damage.val * 0.25
+        helper.add(damage.defer)
+
 
 
 # 以下是helper的一些东西
@@ -178,7 +203,17 @@ class Linker(basePassive):
     def __init__(self, owner):
         self._link = []
         self.classify = "helper"
-        super().__init__(owner)       
+        self.coexist_num = 1000
+        super().__init__(owner)
+
+    def add(self, target):
+        self.target = target
+        same = target.get_same_helper(self)
+        if len(same) < self.coexist_num:
+            target.add_helper(self)
+    
+    def remove(self):
+        self.target.remove_helper(self)
 
     
     def link_to(self, link):
@@ -286,5 +321,18 @@ class CheakRound(Linker):
         target.round_num -= 1
         if target.round_num <= 0:
             target.remove()
+
+class DustSpiderRecorder(Linker):
+    "土蜘蛛伤害记录器，回合后爆发"
+    def config(self):
+        self.val = 0
+        self.coexist_num = 3
+        self.position = "post_round"
     
-# TODO 土蜘蛛的效果
+    def action(self, target):
+        damage = damage_.AbsDamage(self.owner)
+        damage.set_base_val(self.val)
+        damage.name = "土蜘蛛"
+        damage.set_defender(self.target)
+        damage.run()
+        self.remove()

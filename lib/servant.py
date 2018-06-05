@@ -184,6 +184,9 @@ class ServantHelper(PassiveManage):
     
     def remove_helper(self, helper):
         self.remove(helper)
+    
+    def get_same_helper(self, helper):
+        return [item for item in self.__dict__[helper.position] if isinstance(item, type(helper))]
 
 class Statistic:
 

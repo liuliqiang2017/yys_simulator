@@ -91,8 +91,8 @@ class RealDamage(Damage):
     def config(self):
         self.name = "真实伤害"
         self.passive = False
-        from .passive_ import BadThing, HeartEye
-        self.check = [BadThing(), HeartEye()]
+        # from .passive_ import BadThing, HeartEye
+        # self.check = [BadThing(), HeartEye()]
     
 
     def set_base_val(self, val):
@@ -120,3 +120,10 @@ class NeedleDamage(RealDamage):
     def calculate(self, data_dict):
         dm = min(data_dict["atk"] * 1.2, data_dict["max_hp"] * 0.1)
         return round(dm)
+
+class AbsDamage(RealDamage):
+    "绝对伤害，什么不触发，什么都不吃"
+    def config(self):
+        super().config()
+        self.passive = False
+        self.trigger = False
