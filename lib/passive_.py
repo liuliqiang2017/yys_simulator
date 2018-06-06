@@ -140,6 +140,9 @@ class Needle(YuHun):
         "破盾暴击有40%几率，由damage的攻击方向防守方造成一次真实伤害"
         if  damage.critical and damage.val > damage.defer.status.shield and randint(1, 1000) <= 400:
             needle_dm = damage_.NeedleDamage(damage.atker)
+            if hasattr(damage, "skill"):
+                needle_dm.set_skill(damage.skill)
+            needle_dm.name = "针女"
             needle_dm.set_defender(damage.defer)
             needle_dm.run()
 @sington
@@ -188,11 +191,12 @@ class DustSpider(YuHun):
     def config(self):
         self.position = "post_hit"
     
-    def action(self, damage):
+    def action(self, skill):
         "给对方上个helper,回合后触发"
-        helper = DustSpiderRecorder(self.owner)
-        helper.val = damage.val * 0.25
-        helper.add(damage.defer)
+        for key, val in skill.get_result():
+            helper = DustSpiderRecorder(self.owner)
+            helper.val = val * 0.25
+            helper.add(key)
 
 
 
@@ -203,14 +207,28 @@ class Linker(basePassive):
     def __init__(self, owner):
         self._link = []
         self.classify = "helper"
+        self.total_coexist_num = 1000
         self.coexist_num = 1000
+        self.override = False
         super().__init__(owner)
 
     def add(self, target):
-        self.target = target
-        same = target.get_same_helper(self)
-        if len(same) < self.coexist_num:
+        if self.check_total_exist(target) and self.check_exist(target):
+            self.target = target
             target.add_helper(self)
+            return
+        if self.override:
+            target.remove_same_helper(self)
+            self.add(target)
+
+    
+    def check_total_exist(self, target):
+        same = target.get_same_helper(self)
+        return len(same) < self.total_coexist_num
+    
+    def check_exist(self, target):
+        same = target.get_same_owner(self)
+        return len(same) < self.coexist_num
     
     def remove(self):
         self.target.remove_helper(self)
@@ -253,9 +271,9 @@ class HuangAssist(AssistAtk):
         super().config()
         self.chance = 500
     
-    def action(self, damage):
+    def action(self, skill):
         if self.owner.aura:
-            super().action(damage)
+            super().action(skill)
 
 
 # 鸟的协战

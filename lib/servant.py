@@ -195,6 +195,9 @@ class ServantHelper(PassiveManage):
     def get_same_helper(self, helper):
         return [item for item in self.__dict__[helper.position] if isinstance(item, type(helper))]
 
+    def get_same_owner(self, helper):
+        return [item for item in self.__dict__[helper.position] if isinstance(item, type(helper)) and item.owner is helper.owner]
+
 class Statistic:
 
     "伤害统计类"
