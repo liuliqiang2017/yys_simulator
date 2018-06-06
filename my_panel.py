@@ -107,6 +107,7 @@ class My_MainWindow(base_MainWindow):
 
     def add_servant_to(self, location_num):
         "在num指定的位置添加新式神"
+        
         # 弹出添加式神面板，如果有data了就载入，否则空面板
         if not self.has_servant(location_num):
             res = self.create_set_panel()

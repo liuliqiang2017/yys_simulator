@@ -22,6 +22,13 @@ class Damage:
     def set_result(self, val):
         self.result = val
     
+    def set_skill(self, skill):
+        self.skill = skill
+        self.name = skill.name
+        self.factor = getattr(skill, "factor", 1)
+        self.skill_id = skill.skill_id
+        self.atker = skill.owner
+    
     def get_result(self, val):
         return self.result
 
@@ -46,6 +53,9 @@ class Damage:
         self.defer.defend(self)
         # 传递给攻击者的记录器
         self.atker.recorder_add_damage(self)
+        # 如果有skill，回传skill伤害值
+        if hasattr(self, "skill"):
+            self.skill.add_result(self.result)
 
 
     def _cri_check(self):

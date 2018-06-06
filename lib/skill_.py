@@ -23,13 +23,21 @@ class baseSKill:
     
     def __call__(self, target):
         "技能释放过程"
-        # 扣鬼火
+        # 扣鬼火，清空回合中统计
         self.owner.team.energe_change(-self.cost)
+        self.total_damage = 0
+        # TODO 触发技能前触发的效果
         # 技能的实际过程
         self.action(target)
+        # TODO 触发技能后触发的效果
         # 记录本次输出
         self.record()
-        
+    
+    def add_result(self, val):
+        self.total_damage += val
+    
+    def get_total_damage(self):
+        return self.total_damage
     
     def record(self):
         self.owner.recorder_add_showtime(time=self.showtime)
@@ -46,9 +54,7 @@ class baseSKill:
     
     def atk_one(self, target, factor):
         dm = NormalDamage(self.owner)
-        dm.name = self.name
-        dm.factor = factor
-        dm.skill_id = self.skill_id
+        dm.set_skill(self)
         dm.set_defender(target)
         dm.run()
 

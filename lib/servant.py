@@ -127,6 +127,7 @@ class PassiveManage:
         self.pre_round = []
         self.post_round = []
         self.pre_skill = []
+        self.in_skill = []
         self.post_skill = []
         self.by_hit = []
 
@@ -153,6 +154,9 @@ class PassiveManage:
     def action_pre_skill(self, target):
         self.stimulate(target, self.pre_skill)
 
+    def action_in_skill(self, target):
+        self.stimulate(target, self.in_skill)
+    
     def action_post_skill(self, target):
         self.stimulate(target, self.post_skill)
 
