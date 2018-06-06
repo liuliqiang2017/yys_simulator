@@ -15,8 +15,8 @@ def main():
     atk_dict4 = {"hp":15300, "atk":8030, "cri":105, "criDM":277, "speed":121, "def_":523, "yuhun":[BadThing], "name": "陆生"}
     atker4 = servant.LuSheng(atk_dict4)
     def_dict = {"hp":20000000, "atk":1000, "cri":100, "criDM":100, "speed":130, "def_":300, "yuhun":[Needle]}
-    defer1 = servant.BigDog(def_dict)
-    defer2 = servant.BigDog(def_dict)
+    defer1 = servant.Bird(def_dict)
+    defer2 = servant.Bird(def_dict)
     defer1.name = "大天狗1"
     defer1.immune = True
     defer2.name = "大天狗2"

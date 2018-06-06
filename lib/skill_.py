@@ -1,5 +1,5 @@
 "技能相关模块"
-
+from collections import defaultdict
 from random import randint, choice
 
 from .passive_ import TakeNotes
@@ -13,7 +13,7 @@ class baseSKill:
         self.owner = owner
         self.target = None
         self.skill_id = 0
-        self.total_damage = 0
+        self.total_damage = defaultdict(float)
         self.config()
     
     def config(self):
@@ -33,13 +33,13 @@ class baseSKill:
         # TODO 触发技能后触发的效果
         # 记录本次输出,清空本次技能记录
         self.target = None
-        self.total_damage = 0
+        self.total_damage.clear()
         self.record()
     
-    def add_result(self, val):
-        self.total_damage += val
+    def add_result(self, key, val):
+        self.total_damage[key] += val
     
-    def get_total_damage(self):
+    def get_result(self):
         return self.total_damage
     
     def record(self):

@@ -55,7 +55,7 @@ class Damage:
         self.atker.recorder_add_damage(self)
         # 如果有skill，回传skill伤害值
         if hasattr(self, "skill"):
-            self.skill.add_result(self.result)
+            self.skill.add_result(self.defer, self.result)
 
 
     def _cri_check(self):

@@ -82,9 +82,18 @@ class Battle:
         self.team2 = team2
         self.team2.set_arena(self)
         self.members = team1.members + team2.members
+        self.set_servant()
+        self.set_run_bar()
+    
+    def set_servant(self):
+        for each in self.members:
+            each.initialize_servant()
+
+    
+    def set_run_bar(self):
         self.members.sort(key=lambda x:x.status.get_speed(), reverse=True)
         self.run_bar = self.members[0].status.get_speed() * 30
-    
+
     def add_showtime(self, time):
         self.timer += time
     

@@ -19,7 +19,6 @@ class ServantData:
         self.set_extra_status()
     
     def set_servant_status(self, data_dict):
-        self.set_base_data()
         self.max_hp = float(data_dict["hp"])
         self.hp = self.max_hp
         self.speed = float(data_dict["speed"])
@@ -276,11 +275,15 @@ class Servant(baseServant):
     "式神类"
     def __init__(self, data_dict):
         super().__init__()
-        self.name = data_dict.get("name", "未命名")
-        self.status.set_servant_status(data_dict)
-        self.location = self.status.get_speed()
+        self.data_dict = data_dict
         self.classify = "式神"
         self.status_buff = []
+    
+    def initialize_servant(self):
+        self.name = self.data_dict.get("name", "未命名")
+        self.status.set_servant_status(self.data_dict)
+        self.status.set_base_data()
+        self.location = self.status.get_speed()
     
     def config(self):
         pass
@@ -466,6 +469,7 @@ class Scarecrow(basePet):
         self.target = target
         data_dict = self.make_data_dict(target)
         super().__init__(data_dict)
+        self.initialize_servant()
         self.round_num = 2
         self.location = 0
     

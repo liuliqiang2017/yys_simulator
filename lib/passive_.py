@@ -240,11 +240,11 @@ class AssistAtk(Linker):
             if each is not self.owner:
                 each.remove_passive(self)
     
-    def action(self, damage):
+    def action(self, skill):
         if all([self.owner.is_alive(),
-               damage.skill_id == 1,
-               randint(1, 1000) <= self.chance]):
-            self.owner.assist(damage.defer)
+                skill.skill_id == 1,
+                randint(1, 1000) <= self.chance]):
+            self.owner.assist(skill.target)
 
 # 荒的幻境协战
 class HuangAssist(AssistAtk):
