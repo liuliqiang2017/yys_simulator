@@ -7,14 +7,12 @@ class ShowHelp(QtWidgets.QDialog, show_help_info_ui.Ui_Dialog):
     def __init__(self,parent=None):
         super().__init__(parent)
         self.setupUi(self)
-        self.setWindowFlags(QtCore.Qt.SubWindow)
 
 class ShowSoft(QtWidgets.QDialog, show_soft_info_ui.Ui_Dialog):
 
     def __init__(self,parent=None):
         super().__init__(parent)
         self.setupUi(self)
-        self.setWindowFlags(QtCore.Qt.SubWindow)
 
 class ServantSet(QtWidgets.QDialog, servant_set_ui.Ui_Dialog):
 
@@ -62,7 +60,7 @@ class ServantSet(QtWidgets.QDialog, servant_set_ui.Ui_Dialog):
         return True
 
     def set_data(self, data):
-        self.servant_cls.setCurrentIndex(SERVANT_SOURCE[data["servant_cls"]]["cls_index"])
+        self.servant_cls.setCurrentIndex(self.servant_cls.findText(data["servant_cls"]))
         self.servant_name.setText(data["servant_name"])
         self.servant_atk.setText(data["servant_atk"])
         self.servant_def.setText(data["servant_def"])
@@ -70,24 +68,20 @@ class ServantSet(QtWidgets.QDialog, servant_set_ui.Ui_Dialog):
         self.servant_speed.setText(data["servant_speed"])
         self.servant_cri.setText(data["servant_cri"])
         self.servant_cridm.setText(data["servant_cridm"])
-        self.servant_yuhun.setCurrentIndex(YUHUN_SOURCE[data["servant_yuhun"]]["cls_index"])
+        self.servant_yuhun.setCurrentIndex(self.servant_yuhun.findText(data["servant_yuhun"]))
         if "servant_yuhun_01" in data:
-            self.servant_yuhun_01.setCurrentIndex(YUHUN_SOURCE[data["servant_yuhun_01"]]["cls_index"])
+            self.servant_yuhun_01.setCurrentIndex(self.servant_yuhun_01.findText(data["servant_yuhun_01"]))
 
     def set_combobox(self):
-        for key in SERVANT_SOURCE.keys():
-            self.servant_cls.addItem(key)
-        for key in YUHUN_SOURCE.keys():
-            self.servant_yuhun.addItem(key)
-        for key in YUHUN_01_SOURCE.keys():
-            self.servant_yuhun_01.addItem(key)
+        self.servant_cls.addItems(SERVANT_SOURCE.keys())
+        self.servant_yuhun.addItems(YUHUN_SOURCE.keys())
+        self.servant_yuhun_01.addItems(YUHUN_01_SOURCE.keys())
 
 class ShowDetail(QtWidgets.QDialog, show_detail_ui.Ui_Dialog):
 
     def __init__(self,parent=None):
         super().__init__(parent)
         self.setupUi(self)
-        self.setWindowFlags(QtCore.Qt.SubWindow)
     
     def set_data(self, data_dict):
         self.data = data_dict
@@ -136,11 +130,11 @@ class ShowResult(QtWidgets.QDialog, show_result_ui.Ui_Dialog):
     def __init__(self,parent=None):
         super().__init__(parent)
         self.setupUi(self)
-        self.setWindowFlags(QtCore.Qt.SubWindow)
         self._data = {}
         # 对单元格添加点击事件
         self.table_total.cellActivated['int','int'].connect(self.check_cell_click)
-
+        self.table_total.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        
     def set_table_row(self, data_dict):
         row = self.table_total.rowCount()
         self.table_total.setRowCount(row + 1)
@@ -170,6 +164,6 @@ class ShowResult(QtWidgets.QDialog, show_result_ui.Ui_Dialog):
     
     def show_damage_detail(self, row):
         data = self._data[row]
-        detail = ShowDetail()
+        detail = ShowDetail(self)
         detail.set_data(data)
         detail.exec_()

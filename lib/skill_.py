@@ -12,6 +12,7 @@ class baseSKill:
     def __init__(self, owner):
         self.owner = owner
         self.skill_id = 0
+        self.total_damage = 0
         self.config()
     
     def config(self):

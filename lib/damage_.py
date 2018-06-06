@@ -5,7 +5,7 @@ class Damage:
     "伤害基类"
     def __init__(self, atker):
         super().__init__()
-        self.data_dict = atker.status.get_atk_data()
+        self.data_dict = atker.get_atk_data()
         self.atker = atker
         self.name = "默认攻击"
         self.factor = 1
@@ -19,6 +19,12 @@ class Damage:
     def config(self):
         pass
     
+    def set_result(self, val):
+        self.result = val
+    
+    def get_result(self, val):
+        return self.result
+
     def set_defender(self, defender):
         self.defer = defender
         self.data_dict.update(defender.status.get_def_data())
@@ -36,10 +42,11 @@ class Damage:
         # 触发攻击后生效的御魂和被动
         if self.passive:
             self.atker.trigger(self, flag="action_post_skill")
-        # 生效伤害
+        # 生效伤害,记录本次的值
         self.defer.defend(self)
         # 传递给攻击者的记录器
         self.atker.recorder_add_damage(self)
+
 
     def _cri_check(self):
         if randint(1, 1000) <= self.data_dict["cri"] * 10:
@@ -78,7 +85,7 @@ class NoteDamage(IndirectDamage):
     
     def calculate(self, data_dict):
         criDM = data_dict["criDM"] if self._cri_check() else 100
-        atk_dm = self.base_val * criDM * 3
+        atk_dm = self.base_val * criDM * data_dict["damage_ratio"] * data_dict["harm_ratio"] * 3 
         def_dm = (data_dict["def"] + data_dict["extra_def"] - data_dict["def_break"]) * data_dict["def_reduce"] + 300
         dm = round(atk_dm / def_dm)
         max_dm = self.atker.status.get_max_hp() * 12

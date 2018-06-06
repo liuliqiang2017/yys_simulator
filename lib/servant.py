@@ -244,8 +244,8 @@ class baseServant:
 
     def __getattr__(self, attr):
         "委托模式，把一些方法委托给子组件完成"
-        get_route = ("status", "recorder", "yuhun", "passive", "helper")
-        for position in get_route:
+        delegate_route = ("status", "recorder", "yuhun", "passive", "helper")
+        for position in delegate_route:
             try:
                 return getattr(super().__getattribute__(position), attr)
             except AttributeError:
@@ -309,17 +309,20 @@ class Servant(baseServant):
         
     def defend(self, damage):
         # 结算伤害
-        self.damage_apply(damage)
+        real_damage = self.damage_apply(damage)
+        damage.set_result(real_damage)
         # 受攻击后的被动触发判定
-        if damage.trigger:
+        if damage.trigger and real_damage:
             self.trigger(damage, flag="action_by_hit")
     
     def damage_apply(self, damage):
-        if damage.val > self.status.shield:
-            self.status.shield = 0
-            self.status.hp_change(self.status.shield - damage.val)
-        else:
-            self.status.shield -= damage.val
+        real_damage = damage.val - self.status.shield
+        if real_damage > 0:
+            self.status.shield = 0            
+            self.status.hp_change(-real_damage)
+            return real_damage 
+        self.status.shield += real_damage
+        return 0
 
 
 # 以下是一些式神

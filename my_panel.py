@@ -152,7 +152,7 @@ class My_MainWindow(base_MainWindow):
         self.servant_data[str(location_num)] = data
 
     def create_set_panel(self, data=None):
-        panel = ServantSet()
+        panel = ServantSet(self.centralwidget)
         if data:
             panel.set_data(data)
         if panel.exec_():
@@ -175,7 +175,7 @@ class My_MainWindow(base_MainWindow):
             self.statusBar.showMessage("成功模拟出结果,team{}获胜,总计用时{:.1f}秒".format(1 if res_list[0] else 2, res_list[3]))
         # res_list一共有3个元素，[0]是team1获胜的标志，[1]是team1的成员统计，[2]是team2的成员统计
         # TODO 用ui文件建立展示窗口实例
-        result = ShowResult()
+        result = ShowResult(self.centralwidget)
         # 遍历team1中的成员，将数据填充到对应的单元格，TODO 连接好trigger
         for each in res_list[1]:
             result.set_table_row(each)
@@ -228,11 +228,11 @@ class My_MainWindow(base_MainWindow):
 
     def show_help_information(self):
         "使用帮助"
-        ShowHelp().exec_()
+        ShowHelp(self.centralwidget).exec_()
     
     def show_soft_info(self):
         "软件信息"
-        ShowSoft().exec_()
+        ShowSoft(self.centralwidget).exec_()
 
 class MyThread(QtCore.QThread):
 
