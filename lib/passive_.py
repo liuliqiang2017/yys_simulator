@@ -2,10 +2,10 @@
 被动技能以及御魂类
 由属性position决定触发时间分别如下
 "pre_round" : 回合前
-"pre_skill" : 技能命中前
-"post_skill" : 技能命中后
+"pre_hit" : 技能命中前
+"post_hit" : 技能命中后
 "post_round" :回合后
-"by_hit" : 被攻击时
+"be_hit" : 被攻击时
 
 初始化时需要传入实例的创建者owner， 将实例添加到目标时需要调用add(target)， 删除remove()， 生效action(target)接收一个目标参数
 如果多个时间段触发，如酒吞被打和回合结束，那就写两个被动。
@@ -113,7 +113,7 @@ class DrinkPostRound(PassiveSkill):
 class DrinkByHit(PassiveSkill):
     "酒吞被打喝酒"
     def config(self):
-        self.position = "by_hit"
+        self.position = "be_hit"
     
     def action(self, damage):
         if damage.defer.wine < 4 and randint(1, 1000) <= 250:
@@ -134,7 +134,7 @@ class NoneYuHun(YuHun):
 class Needle(YuHun):
     "针女"
     def config(self):
-        self.position = "post_skill"
+        self.position = "post_hit"
     
     def action(self, damage):
         "破盾暴击有40%几率，由damage的攻击方向防守方造成一次真实伤害"
@@ -146,7 +146,7 @@ class Needle(YuHun):
 class NetCut(YuHun):
     "网切"
     def config(self):
-        self.position = "pre_skill"
+        self.position = "pre_hit"
     
     def action(self, damage):
         "50%几率降低对方45%的防御"
@@ -156,7 +156,7 @@ class NetCut(YuHun):
 class BadThing(YuHun):
     "破势"
     def config(self):
-        self.position = "post_skill"
+        self.position = "post_hit"
     
     def action(self, damage):
         "对方血量超过70%，伤害增加40%"
@@ -166,7 +166,7 @@ class BadThing(YuHun):
 class HeartEye(YuHun):
     "心眼"
     def config(self):
-        self.position = "post_skill"
+        self.position = "post_hit"
 
     def action(self, damage):
         "对方血量低于30%， 伤害增加50%"
@@ -186,7 +186,7 @@ class LuckyCat(YuHun):
 class DustSpider(YuHun):
     "土蜘蛛"
     def config(self):
-        self.position = "post_skill"
+        self.position = "post_hit"
     
     def action(self, damage):
         "给对方上个helper,回合后触发"
@@ -268,7 +268,7 @@ class TakeNotes(Linker):
     "书翁记仇的分体, 主体作为被动存在"
     def config(self):
         self.dm_memo = 0
-        self.position = "by_hit"
+        self.position = "be_hit"
         self.link_to(self.owner.notebook)
     
     def action(self, damage):
@@ -300,7 +300,7 @@ class Notebook(Linker):
 class Transit(Linker):
     "草人传递伤害"
     def config(self):
-        self.position = "by_hit"
+        self.position = "be_hit"
     
     def action(self, damage):
         dm = damage_.RealDamage(self.owner.owner)

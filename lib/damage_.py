@@ -43,12 +43,12 @@ class Damage:
     def run(self):
         # 触发攻击前生效的御魂和被动
         if self.passive:
-            self.atker.trigger(self, flag="action_pre_skill")
+            self.atker.trigger(self, flag="action_pre_hit")
         # 计算伤害
         self.val = self.calculate(self.data_dict)
         # 触发攻击后生效的御魂和被动
         if self.passive:
-            self.atker.trigger(self, flag="action_post_skill")
+            self.atker.trigger(self, flag="action_post_hit")
         # 生效伤害,记录本次的值
         self.defer.defend(self)
         # 传递给攻击者的记录器
@@ -118,7 +118,7 @@ class RealDamage(Damage):
     def run(self):
         self.val = self.calculate(self.data_dict)
         # 触发攻击后生效的御魂和被动
-        self.atker.trigger(self, flag="action_post_skill")
+        self.atker.trigger(self, flag="action_post_hit")
         # 生效伤害
         self.defer.defend(self)
         # 传递给攻击者的记录器

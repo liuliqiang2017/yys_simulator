@@ -127,9 +127,10 @@ class PassiveManage:
         self.pre_round = []
         self.post_round = []
         self.pre_skill = []
-        self.in_skill = []
+        self.pre_hit = []
+        self.post_hit = []
         self.post_skill = []
-        self.by_hit = []
+        self.be_hit = []
 
     def add(self, passive):
         self.__dict__[passive.position].append(passive)
@@ -154,14 +155,17 @@ class PassiveManage:
     def action_pre_skill(self, target):
         self.stimulate(target, self.pre_skill)
 
-    def action_in_skill(self, target):
-        self.stimulate(target, self.in_skill)
+    def action_pre_hit(self, target):
+        self.stimulate(target, self.pre_hit)
+
+    def action_post_hit(self, target):
+        self.stimulate(target, self.post_hit)
     
     def action_post_skill(self, target):
         self.stimulate(target, self.post_skill)
 
-    def action_by_hit(self, target):
-        self.stimulate(target, self.by_hit)
+    def action_be_hit(self, target):
+        self.stimulate(target, self.be_hit)
 
 class ServantPassive(PassiveManage):
     "式神被动"
@@ -317,7 +321,7 @@ class Servant(baseServant):
         damage.set_result(real_damage)
         # 受攻击后的被动触发判定
         if damage.trigger and real_damage:
-            self.trigger(damage, flag="action_by_hit")
+            self.trigger(damage, flag="action_be_hit")
     
     def damage_apply(self, damage):
         real_damage = damage.val - self.status.shield

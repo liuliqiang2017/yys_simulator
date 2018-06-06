@@ -11,6 +11,7 @@ class baseSKill:
     "技能的抽象基类"
     def __init__(self, owner):
         self.owner = owner
+        self.target = None
         self.skill_id = 0
         self.total_damage = 0
         self.config()
@@ -23,14 +24,16 @@ class baseSKill:
     
     def __call__(self, target):
         "技能释放过程"
-        # 扣鬼火，清空回合中统计
+        self.target = target
+        # 扣鬼火
         self.owner.team.energe_change(-self.cost)
-        self.total_damage = 0
         # TODO 触发技能前触发的效果
         # 技能的实际过程
         self.action(target)
         # TODO 触发技能后触发的效果
-        # 记录本次输出
+        # 记录本次输出,清空本次技能记录
+        self.target = None
+        self.total_damage = 0
         self.record()
     
     def add_result(self, val):
