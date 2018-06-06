@@ -118,7 +118,7 @@ class ServantData:
         "改变额外暴伤"
         self.extra_criDM += num
 
-# TODO 式神被动御魂管理类
+# 式神被动御魂管理类
 class PassiveManage:
     "被动，御魂等管理类"
     def __init__(self):

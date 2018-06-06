@@ -31,7 +31,7 @@ def main():
 
     team2 = battle.Team()
     team2.add_member(defer1)
-    # team2.add_member(defer2)
+    team2.add_member(defer2)
     
     bat = battle.Battle()
     bat.add(team1, team2)

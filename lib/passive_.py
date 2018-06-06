@@ -233,12 +233,12 @@ class AssistAtk(Linker):
     def add(self, target):
         for each in target.team.members:
             if each is not self.owner:
-                each.add_passive(self)
+                each.add_helper(self)
 
     def remove(self):
         for each in self.owner.team.members:
             if each is not self.owner:
-                each.remove_passive(self)
+                each.remove_helper(self)
     
     def action(self, skill):
         if all([self.owner.is_alive(),

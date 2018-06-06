@@ -27,10 +27,12 @@ class baseSKill:
         self.target = target
         # 扣鬼火
         self.owner.team.energe_change(-self.cost)
-        # TODO 触发技能前触发的效果
+        # 触发技能前触发的效果
+        self.owner.trigger(self, flag="action_pre_skill")
         # 技能的实际过程
         self.action(target)
-        # TODO 触发技能后触发的效果
+        # 触发技能后触发的效果
+        self.owner.trigger(self, flag="action_post_skill")
         # 记录本次输出,清空本次技能记录
         self.target = None
         self.total_damage.clear()
@@ -133,10 +135,8 @@ class WineKingSkill1(baseSKill):
     def action(self, target):
         self.showtime = 1.2 + (self.owner.wine * 0.5)
         self.atk_one(target, 1.25)
-        self.skill_id = 0
         for _ in range(self.owner.wine):
             self.atk_one(target, 1.25)
-        self.skill_id = 1
 
 class LuShengSkill1(baseSKill):
     "陆生1技能"
