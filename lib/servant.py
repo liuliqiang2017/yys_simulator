@@ -174,6 +174,9 @@ class ServantPassive(PassiveManage):
     
     def remove_passive(self, passive):
         self.remove(passive)
+    
+    def has_passive(self, passive):
+        return bool([item for item in self.__dict__[passive.position] if isinstance(item, type(passive))])
 
 class ServantYuHun(PassiveManage):
     "式神御魂"
@@ -182,6 +185,9 @@ class ServantYuHun(PassiveManage):
     
     def remove_yuhun(self, yuhun):
         self.remove(yuhun)
+    
+    def has_yuhun(self, yuhun):
+        return bool([item for item in self.__dict__[yuhun.position] if isinstance(item, type(yuhun))])
 
 class ServantHelper(PassiveManage):
     "式神的其他触发，比如记仇，土蜘蛛等"
@@ -192,11 +198,14 @@ class ServantHelper(PassiveManage):
     def remove_helper(self, helper):
         self.remove(helper)
     
-    def remo_same_helper(self, helper):
+    def remove_same_helper(self, helper):
         self.get_same_helper(helper)[0].remove()
     
     def get_same_helper(self, helper):
         return [item for item in self.__dict__[helper.position] if isinstance(item, type(helper))]
+    
+    def has_helper(self, helper):
+        return bool([item for item in self.__dict__[helper.position] if isinstance(item, type(helper))])
 
     def get_same_owner_helper(self, helper):
         return [item for item in self.__dict__[helper.position] if isinstance(item, type(helper)) and item.owner is helper.owner]
@@ -331,6 +340,15 @@ class Servant(baseServant):
         getattr(self.yuhun, flag)(target)
         getattr(self.helper, flag)(target)
     
+    def trigger_for_damage(self, target, checker, *, flag):
+        condition = checker.get_trigger()
+        if condition[0]:
+            getattr(self.yuhun, flag)(target)
+        if condition[1]:
+            getattr(self.passive, flag)(target)
+        if condition[2]:
+            getattr(self.helper, flag)(target)
+    
     def ai_act(self):
         "自动战斗时的ai，此处是最基础的3火开大ai"
         target = self.enemy.best_choice()
@@ -357,8 +375,7 @@ class Servant(baseServant):
         real_damage = self.damage_apply(damage)
         damage.set_damage_result(real_damage)
         # 受攻击后的被动触发判定
-        if damage.trigger and real_damage:
-            self.trigger(damage, flag="action_be_hit")
+        self.trigger_for_damage(damage, damage.get_def_trigger(), flag="action_be_hit")
     
     def damage_apply(self, damage):
         real_damage = damage.val - self.status.shield

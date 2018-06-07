@@ -6,6 +6,7 @@ from .passive_ import TakeNotes
 from .damage_ import NormalDamage
 from .buff_ import Fear, Mie, Xing
 
+
 #技能基类
 class baseSKill:
     "技能的抽象基类"

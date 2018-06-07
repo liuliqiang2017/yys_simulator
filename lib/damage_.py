@@ -1,6 +1,46 @@
 "伤害类，负责实现伤害的结算"
 from random import randint
 
+# 触发管理类
+class baseTrigger:
+    "触发基类"
+    def __init__(self):
+        super().__init__()
+        self.yuhun = True
+        self.passive = True
+        self.helper = True
+        self.specific = [] # 特殊的规则放在这里
+    
+    def set_trigger(self, y, p, h):
+        self.yuhun = bool(y)
+        self.passive = bool(p)
+        self.helper = bool(h)
+    
+    def merge_trigger(self, y, p, h):
+        self.yuhun = self.yuhun and bool(y)
+        self.passive = self.passive and bool(p)
+        self.helper = self.helper and bool(h)
+    
+    def get_trigger(self):
+        return self.yuhun, self.passive, self.helper
+    
+    def add_specific(self, spe):
+        self.specific.append(spe)
+    
+    def get_specific(self):
+        return self.specific
+
+    def remove_specific(self, spe):
+        self.specific.remove(spe)
+
+class AttackTrigger(baseTrigger):
+    "攻击方触发器"
+    pass
+
+class DefenderTrigger(baseTrigger):
+    "防守方触发器"
+    pass
+
 class Damage:
     "伤害基类"
     def __init__(self, atker):
@@ -10,9 +50,9 @@ class Damage:
         self.name = "默认攻击"
         self.factor = 1
         self.skill_id = 0 # 由哪个位置技能发动，以此判断是否能协战
-        self.passive = True # 是否触发自己被动
-        self.counter = True # 能否被反击
-        self.trigger = True # 能否触发对方被动御魂
+        self.atk_trigger = AttackTrigger()
+        self.def_trigger = DefenderTrigger()
+        # self.took_effect = []
         self.critical = False # 是否暴击
         self.config()
     
@@ -40,15 +80,25 @@ class Damage:
         "计算伤害值，由子类实现不同的计算方法"
         raise NotImplementedError
     
+    def get_def_trigger(self):
+        return self.def_trigger
+    
+    # def add_effect(self, actor):
+    #     self.took_effect.append(actor)
+    
+    # def has_effect(self, actor):
+    #     return bool([effect for effect in self.took_effect if isinstance(effect, type(actor))])
+    
     def run(self):
         # 触发攻击前生效的御魂和被动
-        if self.passive:
-            self.atker.trigger(self, flag="action_pre_hit")
+        self.atker.trigger_for_damage(self, self.atk_trigger, flag="action_pre_hit")
         # 计算伤害
         self.val = self.calculate(self.data_dict)
-        # 触发攻击后生效的御魂和被动
-        if self.passive:
-            self.atker.trigger(self, flag="action_post_hit")
+        # 触发攻击后生效的御魂和被动, 触发specific里的御魂
+        self.atker.trigger_for_damage(self, self.atk_trigger, flag="action_post_hit")
+        for each in self.atk_trigger.get_specific():
+            if not getattr(self.atker, "has_" + each.classify)(each):
+                each.action(self)
         # 生效伤害,记录本次的值
         self.defer.defend(self)
         # 传递给攻击者的记录器
