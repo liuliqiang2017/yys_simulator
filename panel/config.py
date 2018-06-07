@@ -26,5 +26,5 @@ YUHUN_SOURCE = {
 
 YUHUN_01_SOURCE = {
 	"无御魂":{"cls_index":0, "cls":"NoneYuHun"},
-	"土蜘蛛":{"cls_index":1, "cls":"DustSpider"},
+	# "土蜘蛛":{"cls_index":1, "cls":"DustSpider"},
 }

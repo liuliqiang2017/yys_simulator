@@ -189,11 +189,11 @@ class LuckyCat(YuHun):
 class DustSpider(YuHun):
     "土蜘蛛"
     def config(self):
-        self.position = "post_hit"
+        self.position = "post_skill"
     
     def action(self, skill):
         "给对方上个helper,回合后触发"
-        for key, val in skill.get_result():
+        for key, val in skill.get_skill_result().items():
             helper = DustSpiderRecorder(self.owner)
             helper.val = val * 0.25
             helper.add(key)

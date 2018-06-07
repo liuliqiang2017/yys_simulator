@@ -192,6 +192,9 @@ class ServantHelper(PassiveManage):
     def remove_helper(self, helper):
         self.remove(helper)
     
+    def remo_same_helper(self, helper):
+        self.get_same_helper(helper)[0].remove()
+    
     def get_same_helper(self, helper):
         return [item for item in self.__dict__[helper.position] if isinstance(item, type(helper))]
 
@@ -352,7 +355,7 @@ class Servant(baseServant):
     def defend(self, damage):
         # 结算伤害
         real_damage = self.damage_apply(damage)
-        damage.set_result(real_damage)
+        damage.set_damage_result(real_damage)
         # 受攻击后的被动触发判定
         if damage.trigger and real_damage:
             self.trigger(damage, flag="action_be_hit")

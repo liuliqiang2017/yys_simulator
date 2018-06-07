@@ -38,10 +38,10 @@ class baseSKill:
         self.total_damage.clear()
         self.record()
     
-    def add_result(self, key, val):
+    def add_skill_result(self, key, val):
         self.total_damage[key] += val
     
-    def get_result(self):
+    def get_skill_result(self):
         return self.total_damage
     
     def record(self):

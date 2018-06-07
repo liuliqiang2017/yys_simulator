@@ -19,7 +19,7 @@ class Damage:
     def config(self):
         pass
     
-    def set_result(self, val):
+    def set_damage_result(self, val):
         self.result = val
     
     def set_skill(self, skill):
@@ -29,7 +29,7 @@ class Damage:
         self.skill_id = skill.skill_id
         self.atker = skill.owner
     
-    def get_result(self, val):
+    def get_damage_result(self):
         return self.result
 
     def set_defender(self, defender):
@@ -55,7 +55,7 @@ class Damage:
         self.atker.recorder_add_damage(self)
         # 如果有skill，回传skill伤害值
         if hasattr(self, "skill"):
-            self.skill.add_result(self.defer, self.result)
+            self.skill.add_skill_result(self.defer, self.result)
 
 
     def _cri_check(self):
