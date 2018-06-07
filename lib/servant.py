@@ -195,8 +195,36 @@ class ServantHelper(PassiveManage):
     def get_same_helper(self, helper):
         return [item for item in self.__dict__[helper.position] if isinstance(item, type(helper))]
 
-    def get_same_owner(self, helper):
+    def get_same_owner_helper(self, helper):
         return [item for item in self.__dict__[helper.position] if isinstance(item, type(helper)) and item.owner is helper.owner]
+
+class BuffManage:
+    "状态管理类"
+    def __init__(self):
+        super().__init__()
+        self.buffs = []
+    
+    def has_buff(self, buff_cls):
+        return bool([buff for buff in self.buffs if isinstance(buff, buff_cls)])
+
+    def get_same_buff(self, other_buff):
+        return [buff for buff in self.buffs if isinstance(buff, type(other_buff))]
+    
+    def get_same_caster_buff(self, other_buff):
+        return [buff for buff in self.buffs if isinstance(buff, type(other_buff)) and buff.caster == other_buff.caster]
+    
+    def add_buff(self, buff):
+        self.buffs.append(buff)
+    
+    def remove_buff(self, buff):
+        self.buffs.remove(buff)
+    
+    def update_buffs(self):
+        for buff in self.buffs:
+            buff.update_layer()
+    
+    def remove_same_buff(self, buff):
+        self.get_same_buff(buff)[0].remove()
 
 class Statistic:
 
@@ -245,6 +273,7 @@ class baseServant:
         self.yuhun = ServantYuHun()
         self.passive = ServantPassive()
         self.helper = ServantHelper()
+        self.buffs = BuffManage()
         self.location = 0
         self.immune = False
         self.team = None
@@ -254,7 +283,7 @@ class baseServant:
 
     def __getattr__(self, attr):
         "委托模式，把一些方法委托给子组件完成"
-        delegate_route = ("status", "recorder", "yuhun", "passive", "helper")
+        delegate_route = ("status", "recorder", "yuhun", "passive", "helper", "buffs")
         for position in delegate_route:
             try:
                 return getattr(super().__getattribute__(position), attr)
@@ -280,7 +309,6 @@ class Servant(baseServant):
         super().__init__()
         self.data_dict = data_dict
         self.classify = "式神"
-        self.status_buff = []
     
     def initialize_servant(self):
         self.name = self.data_dict.get("name", "未命名")
@@ -441,12 +469,7 @@ class QingMing(Servant):
         self.skill_1 = skill_.QingMingSkill1(self)
         self.skill_2 = skill_.QingMingSkill2(self)
         self.skill_3 = skill_.QingMingSkill3(self)
-    
-    def has_buff(self, buff):
-        for each in self.status_buff:
-            if isinstance(each, buff):
-                return True
-        return False
+
     
     def ai_act(self):
         from . buff_ import Xing

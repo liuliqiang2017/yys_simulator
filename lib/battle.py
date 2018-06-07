@@ -168,8 +168,7 @@ class Ending(Handler):
         # 结算回合后的触发效果
         self.actor.trigger(self.actor, flag="action_post_round")
         # 自身buff降一层
-        for each in self.actor.status_buff:
-            each.layer_update()
+        self.actor.update_buffs()
         # 鬼火条推进一格
         if self.actor.classify != "召唤物":
             self.actor.team.energe_walk()

@@ -200,7 +200,7 @@ class DustSpider(YuHun):
 
 
 
-# 以下是helper的一些东西
+# 以下是helper的一些东西，helper实现了很多功能，包括不限于debuff
 
 class Linker(basePassive):
     "联动器基类"
@@ -227,7 +227,7 @@ class Linker(basePassive):
         return len(same) < self.total_coexist_num
     
     def check_exist(self, target):
-        same = target.get_same_owner(self)
+        same = target.get_same_owner_helper(self)
         return len(same) < self.coexist_num
     
     def remove(self):
