@@ -323,6 +323,8 @@ class Transit(Linker):
     def action(self, damage):
         dm = damage_.RealDamage(self.owner.owner)
         dm.name = "草人传递"
+        dm.atk_trigger = damage.atk_trigger
+        dm.def_trigger = damage.def_trigger
         dm.set_base_val(damage.val)
         dm.set_defender(self.owner.target)
         dm.run()

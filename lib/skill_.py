@@ -3,7 +3,7 @@ from collections import defaultdict
 from random import randint, choice
 
 from .passive_ import TakeNotes
-from .damage_ import NormalDamage
+from .damage_ import NormalDamage, AttackTrigger, DefenderTrigger
 from .buff_ import Fear, Mie, Xing
 
 
@@ -14,6 +14,8 @@ class baseSKill:
         self.owner = owner
         self.target = None
         self.skill_id = 0
+        self.atk_trigger = AttackTrigger()
+        self.def_trigger = DefenderTrigger()
         self.total_damage = defaultdict(float)
         self.config()
     
@@ -44,6 +46,12 @@ class baseSKill:
     
     def get_skill_result(self):
         return self.total_damage
+    
+    def get_atk_trigger(self):
+        return self.atk_trigger.get_trigger()
+    
+    def get_def_trigger(self):
+        return self.def_trigger.get_trigger()
     
     def record(self):
         self.owner.recorder_add_showtime(time=self.showtime)

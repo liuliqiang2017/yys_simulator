@@ -64,10 +64,11 @@ class Damage:
     
     def set_skill(self, skill):
         self.skill = skill
-        self.name = skill.name
         self.factor = getattr(skill, "factor", 1)
         self.skill_id = skill.skill_id
         self.atker = skill.owner
+        self.atk_trigger.merge_trigger(*skill.get_atk_trigger())
+        self.def_trigger.merge_trigger(*skill.get_def_trigger())
     
     def get_damage_result(self):
         return self.result
@@ -134,8 +135,9 @@ class IndirectDamage(Damage):
     "间接伤害，计算防，不触发双方御魂，触发被动"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
     def config(self):
         self.name = "间接伤害"
-        self.passive = False
-        self.trigger = True
+        self.atk_trigger.set_trigger(False, True, True)
+        self.def_trigger.set_trigger(False, True, True)
+
 
 class NoteDamage(IndirectDamage):
     "书翁的记仇结算"
@@ -156,23 +158,10 @@ class RealDamage(Damage):
 
 
     def config(self):
-        self.name = "真实伤害"
-        self.passive = False
-        # from .passive_ import BadThing, HeartEye
-        # self.check = [BadThing(), HeartEye()]
-    
+        self.name = "真实伤害"    
 
     def set_base_val(self, val):
         self.base_val = val
-    
-    def run(self):
-        self.val = self.calculate(self.data_dict)
-        # 触发攻击后生效的御魂和被动
-        self.atker.trigger(self, flag="action_post_hit")
-        # 生效伤害
-        self.defer.defend(self)
-        # 传递给攻击者的记录器
-        self.atker.recorder_add_damage(self)
     
     def calculate(self, data_dict):
         return self.base_val
@@ -192,5 +181,5 @@ class AbsDamage(RealDamage):
     "绝对伤害，什么不触发，什么都不吃"
     def config(self):
         super().config()
-        self.passive = False
-        self.trigger = False
+        self.atk_trigger.set_trigger(False, False, False)
+        self.def_trigger.set_trigger(False, False, False)

@@ -40,7 +40,6 @@ def main():
     print(result)
 
 if __name__ == '__main__':
-    # import cProfile
-    # test= "main()"
-    # cProfile.run(test)
-    main()
+    import cProfile
+    test= "main()"
+    cProfile.run(test)
