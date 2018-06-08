@@ -75,18 +75,17 @@ class baseSKill:
 
 class ServantSkill1(baseSKill):
     "式神模版的一技能"
-    pass
+    def __init__(self, owner):
+        super().__init__(owner)
+        self.skill_id = 1
 
 class ServantSkill3(baseSKill):
     "式神模版的三技能"
-    def config(self):
-        self.name = "暴跳如雷"
-        self.cost = 3
-        self.factor = 3
-        self.showtime = 3
+    def __init__(self, owner):
+        super().__init__(owner)
         self.skill_id = 3
 
-class BigDogSKill1(baseSKill):
+class BigDogSKill1(ServantSkill1):
     "大狗一技能"
     def config(self):
         self.name = "风袭"
@@ -94,7 +93,7 @@ class BigDogSKill1(baseSKill):
         self.factor = 1.2
         self.showtime = 1
 
-class BigDogSKill3(baseSKill):
+class BigDogSKill3(ServantSkill3):
     "大狗三技能"
     def config(self):
         self.name = "羽刃暴风"
@@ -106,7 +105,7 @@ class BigDogSKill3(baseSKill):
         for _ in range(4):
             self.atk_all(0.37 * 1.2)
 
-class BirdSkill1(baseSKill):
+class BirdSkill1(ServantSkill1):
     "姑获鸟的一技能"
     def config(self):
         self.name = "伞剑"
@@ -122,7 +121,7 @@ class BirdSkill1(baseSKill):
         dm.set_defender(target)
         dm.run()
 
-class BirdSkill3(baseSKill):
+class BirdSkill3(ServantSkill3):
     "姑获鸟的三技能"
     def config(self):
         self.name = "天翔鹤斩"
@@ -135,7 +134,7 @@ class BirdSkill3(baseSKill):
             self.atk_all(0.33 * 1.24)
         self.atk_one(target, 0.88 * 1.24)
 
-class WineKingSkill1(baseSKill):
+class WineKingSkill1(ServantSkill1):
     "酒吞1技能"
     def config(self):
         self.name = "酒葫芦"
@@ -148,7 +147,7 @@ class WineKingSkill1(baseSKill):
         for _ in range(self.owner.wine):
             self.atk_one(target, 1.25)
 
-class HuaNiaoSkill1(baseSKill):
+class HuaNiaoSkill1(ServantSkill1):
     "花鸟1技能"
     def config(self):
         self.name = "归鸟"
@@ -160,7 +159,7 @@ class HuaNiaoSkill1(baseSKill):
         for _ in range(self.owner.bird):
             self.atk_one(target, 0.4)
 
-class LuShengSkill1(baseSKill):
+class LuShengSkill1(ServantSkill1):
     "陆生1技能"
     def config(self):
         self.name = "弥弥切丸"
@@ -180,7 +179,7 @@ class LuShengSkill1(baseSKill):
         
         super().action(target)
 
-class LuShengSkill3(baseSKill):
+class LuShengSkill3(ServantSkill3):
     "陆生3技能"
     def config(self):
         self.name = "百鬼夜行"
@@ -193,7 +192,7 @@ class LuShengSkill3(baseSKill):
         super().action(target)
 
 
-class YuZaoQianSkill1(baseSKill):
+class YuZaoQianSkill1(ServantSkill1):
     "玉藻前1技能"
     def config(self):
         self.name = "灵击"
@@ -201,7 +200,7 @@ class YuZaoQianSkill1(baseSKill):
         self.factor = 1.25
         self.showtime = 1.3
     
-class YuZaoQianSkill2(baseSKill):
+class YuZaoQianSkill2(ServantSkill3):
     "玉藻前2技能"
     def config(self):
         self.name = "狐火"
@@ -234,7 +233,7 @@ class YuZaoQianSkill2Combo(YuZaoQianSkill2):
         target = min(target.team.alive_members(), key=lambda x: x.status.get_hp_precent())
         super().action(target)
 
-class YuZaoQianSkill3(baseSKill):
+class YuZaoQianSkill3(ServantSkill3):
     "玉藻前三技能"
     def config(self):
         self.cost = 3
@@ -265,7 +264,7 @@ class YuZaoQianSkill3Combo(YuZaoQianSkill3):
         self.combo = False
 
 
-class ShuWengSkill1(baseSKill):
+class ShuWengSkill1(ServantSkill1):
     "书翁一技能"
     def config(self):
         self.name = "墨染"
@@ -273,7 +272,7 @@ class ShuWengSkill1(baseSKill):
         self.factor = 1.25
         self.showtime = 1.2
 
-class ShuWengSkill3(baseSKill):
+class ShuWengSkill3(ServantSkill3):
     "书翁三技能"
     def config(self):
         self.name = "万象之书"
@@ -296,7 +295,7 @@ class ShuWengSkill3(baseSKill):
         note.add(target)
         self.atk_one(target, self.factor)
 
-class UglyGirlSkill1(baseSKill):
+class UglyGirlSkill1(ServantSkill1):
     "丑女一技能"
     def config(self):
         self.name = "咒锥"
@@ -304,7 +303,7 @@ class UglyGirlSkill1(baseSKill):
         self.factor = 1.25
         self.showtime = 1.8
 
-class UglyGirlSkill3(baseSKill):
+class UglyGirlSkill3(ServantSkill3):
     "丑女三技能"
     def config(self):
         self.name = "草人替身"
@@ -319,7 +318,7 @@ class UglyGirlSkill3(baseSKill):
             pet.config()
 
 
-class PeachSkill1(baseSKill):
+class PeachSkill1(ServantSkill1):
     "桃子一技能"
     def config(self):
         self.name = "兔狱卒·叱责"
@@ -327,7 +326,7 @@ class PeachSkill1(baseSKill):
         self.factor = 1.25
         self.showtime = 1.5
 
-class PeachSkill3(baseSKill):
+class PeachSkill3(ServantSkill3):
     "桃子二技能"
     def config(self):
         self.name = "蜜桃·地狱偶像"
@@ -344,7 +343,7 @@ class PeachSkill3(baseSKill):
         target.move(self.distance)
         target.status.hp_change(self.owner.status.get_max_hp() * 0.1)
 
-class QingMingSkill1(baseSKill):
+class QingMingSkill1(ServantSkill1):
     "晴明普攻"
     def config(self):
         self.name = "基础术式"
@@ -352,7 +351,7 @@ class QingMingSkill1(baseSKill):
         self.factor = 1.2
         self.showtime = 1.25
 
-class QingMingSkill2(baseSKill):
+class QingMingSkill2(ServantSkill3):
     "晴明灭"
     def config(self):
         self.name = "符咒·灭"
@@ -364,7 +363,7 @@ class QingMingSkill2(baseSKill):
         for each in target.enemy.alive_members():
             Mie(self.owner).add(each)
 
-class QingMingSkill3(baseSKill):
+class QingMingSkill3(ServantSkill3):
     "晴明星"
     def config(self):
         self.name = "符咒·星"
@@ -377,7 +376,7 @@ class QingMingSkill3(baseSKill):
             Xing(self.owner).add(each)
     
 
-class CiMuSkill1(baseSKill):
+class CiMuSkill1(ServantSkill1):
     "茨木1技能"
     def config(self):
         self.name = "黑焰"
@@ -385,7 +384,7 @@ class CiMuSkill1(baseSKill):
         self.factor = 1.25
         self.showtime = 1
 
-class CiMuSkill3(baseSKill):
+class CiMuSkill3(ServantSkill3):
     "茨木3技能"
     def config(self):
         self.name = "地狱之手"
@@ -401,7 +400,7 @@ class CiMuSkill3(baseSKill):
             for each in self.owner.get_same_buff(Doom(self.owner)):
                 each.remove()
 
-class HuangSkill1(baseSKill):
+class HuangSkill1(ServantSkill1):
     "荒1技能"
     def config(self):
         self.name = "星轨"
@@ -409,7 +408,7 @@ class HuangSkill1(baseSKill):
         self.factor = 1.25
         self.showtime = 1
 
-class HuangSkill3(baseSKill):
+class HuangSkill3(ServantSkill3):
     "荒3技能"
     def config(self):
         self.name = "天罚·星"
