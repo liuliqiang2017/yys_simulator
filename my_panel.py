@@ -29,12 +29,17 @@ class base_MainWindow(Ui_MainWindow):
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
         MainWindow.setFont(font)
+        self.set_css()
     
     def init_sevrant_data(self, location_num):
         raise NotImplementedError
     
     def set_all_backgourd(self):
         raise NotImplementedError
+    
+    def set_css(self):
+        with open('./panel/css.qss', 'r', encoding='utf-8') as q:
+            self.centralwidget.setStyleSheet(q.read())
     
     def set_trigger_connect(self):
         raise NotImplementedError

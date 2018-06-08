@@ -1,3 +1,5 @@
+import os.path
+
 from PyQt5 import QtWidgets, QtGui, QtCore
 from .config import SERVANT_SOURCE, YUHUN_SOURCE, YUHUN_01_SOURCE
 from .ui import show_help_info_ui, servant_set_ui, show_detail_ui, show_result_ui, show_soft_info_ui
@@ -21,6 +23,11 @@ class ServantSet(QtWidgets.QDialog, servant_set_ui.Ui_Dialog):
         self.setupUi(self)
         self.set_combobox()
         self.input_limit()
+        self.set_css()
+
+    def set_css(self):
+        with open('./panel/css.qss', 'r', encoding='utf-8') as q:
+            self.setStyleSheet(q.read())
 
     def get_result(self):
         data =  dict(servant_cls=self.servant_cls.currentText(),
