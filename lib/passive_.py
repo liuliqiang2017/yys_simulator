@@ -89,6 +89,18 @@ class SteelFeather(PassiveSkill):
         "给owner加个buff"
         buff_.SteelMao(self.owner).add(target)
 
+class HuangAura(PassiveSkill):
+    "荒的幻境"
+    def config(self):
+        self.position = "pre_round"
+    
+    def action(self, target):
+        "给owner加个buff"
+        if randint(1, 1000) < 600:
+            self.owner.aura = True
+        else:
+            self.owner.aura = False
+
 class Curse(PassiveSkill):
     "丑女的诅咒"
     def config(self):
@@ -109,6 +121,16 @@ class DrinkPostRound(PassiveSkill):
         "本大爷要喝一口酒"
         if target.wine < 4 and randint(1, 1000) <= 500:
             target.wine += 1
+
+class Picture(PassiveSkill):
+    "花鸟进花卷"
+    def config(self):
+        self.position = "post_round"
+    
+    def action(self, target):
+        "花鸟收起来"
+        if randint(1, 1000) <= 300:
+            self.owner.move(self.owner.team.arena.run_bar * 0.3)
 
 class DrinkByHit(PassiveSkill):
     "酒吞被打喝酒"

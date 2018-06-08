@@ -4,7 +4,7 @@ from random import randint, choice
 
 from .passive_ import TakeNotes
 from .damage_ import NormalDamage, AttackTrigger, DefenderTrigger
-from .buff_ import Fear, Mie, Xing
+from .buff_ import Fear, Mie, Xing, Doom
 
 
 #技能基类
@@ -13,6 +13,7 @@ class baseSKill:
     def __init__(self, owner):
         self.owner = owner
         self.target = None
+        self.kill = False
         self.skill_id = 0
         self.atk_trigger = AttackTrigger()
         self.def_trigger = DefenderTrigger()
@@ -146,6 +147,18 @@ class WineKingSkill1(baseSKill):
         self.atk_one(target, 1.25)
         for _ in range(self.owner.wine):
             self.atk_one(target, 1.25)
+
+class HuaNiaoSkill1(baseSKill):
+    "花鸟1技能"
+    def config(self):
+        self.name = "归鸟"
+        self.cost = 0
+        self.showtime = 1.5
+    
+    def action(self, target):
+        self.atk_one(target, 0.4)
+        for _ in range(self.owner.bird):
+            self.atk_one(target, 0.4)
 
 class LuShengSkill1(baseSKill):
     "陆生1技能"
@@ -363,3 +376,49 @@ class QingMingSkill3(baseSKill):
         for each in target.team.alive_members():
             Xing(self.owner).add(each)
     
+
+class CiMuSkill1(baseSKill):
+    "茨木1技能"
+    def config(self):
+        self.name = "黑焰"
+        self.cost = 0
+        self.factor = 1.25
+        self.showtime = 1
+
+class CiMuSkill3(baseSKill):
+    "茨木3技能"
+    def config(self):
+        self.name = "地狱之手"
+        self.cost = 3
+        self.factor = 2.63 * 1.2
+        self.showtime = 2.35
+    
+    def action(self, target):
+        super().action(target)
+        if not self.kill:
+            Doom(self.owner).add(self.owner)
+        else:
+            for each in self.owner.get_same_buff(Doom(self.owner)):
+                each.remove()
+
+class HuangSkill1(baseSKill):
+    "荒1技能"
+    def config(self):
+        self.name = "星轨"
+        self.cost = 0
+        self.factor = 1.25
+        self.showtime = 1
+
+class HuangSkill3(baseSKill):
+    "荒3技能"
+    def config(self):
+        self.name = "天罚·星"
+        self.cost = 3
+        self.factor = 1.04
+        self.showtime = 1
+    
+    def action(self, target):
+        factor = self.factor
+        for _ in range(self.cost):
+            self.atk_one(target, factor)
+            factor = factor * 0.75

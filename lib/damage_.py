@@ -64,6 +64,8 @@ class Damage:
     
     def set_skill(self, skill):
         self.skill = skill
+        if self.name == "默认攻击":
+            self.name = skill.name
         self.factor = getattr(skill, "factor", 1)
         self.skill_id = skill.skill_id
         self.atker = skill.owner

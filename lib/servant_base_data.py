@@ -88,3 +88,27 @@ QingMing = {  "base_atk" : 3256,
               "base_criDM" : 150,
               "base_max_hp" : 13847,
               "passive":[]}
+
+CiMu = {      "base_atk" : 3216,
+              "base_def" : 397,
+              "base_speed" : 112,
+              "base_cri" : 10,
+              "base_criDM" : 150,
+              "base_max_hp" : 10254,
+              "passive":[]}
+
+Huang = {     "base_atk" : 3323,
+              "base_def" : 490,
+              "base_speed" : 104,
+              "base_cri" : 10,
+              "base_criDM" : 150,
+              "base_max_hp" : 10254,
+              "passive":[passive_.HuangAura, passive_.HuangAssist]}
+
+HuaNiao = {   "base_atk" : 2305,
+              "base_def" : 397,
+              "base_speed" : 112,
+              "base_cri" : 5,
+              "base_criDM" : 150,
+              "base_max_hp" : 14127,
+              "passive":[passive_.Picture]}

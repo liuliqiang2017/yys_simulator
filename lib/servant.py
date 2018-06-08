@@ -236,7 +236,9 @@ class BuffManage:
             buff.update_layer()
     
     def remove_same_buff(self, buff):
-        self.get_same_buff(buff)[0].remove()
+        same = self.get_same_buff(buff)
+        if same:
+            same[0].remove()
 
 class Statistic:
 
@@ -429,6 +431,15 @@ class LuSheng(Servant):
         self.skill_1 = skill_.LuShengSkill1(self)
         self.skill_3 = skill_.LuShengSkill3(self)
 
+class HuaNiao(Servant):
+    "花鸟"
+    def config(self):
+        self.bird = 2
+    
+    def set_skills(self):
+        self.skill_1 = skill_.HuaNiaoSkill1(self)
+        self.skill_3 = skill_.HuaNiaoSkill1(self)
+
 class YuZaoQian(Servant):
     "玉藻前"
     def config(self):
@@ -478,6 +489,22 @@ class Peach(Servant):
     def set_skills(self):
         self.skill_1 = skill_.PeachSkill1(self)
         self.skill_3 = skill_.PeachSkill3(self)
+
+class CiMu(Servant):
+    "茨木"
+    
+    def set_skills(self):
+        self.skill_1 = skill_.CiMuSkill1(self)
+        self.skill_3 = skill_.CiMuSkill3(self)
+
+class Huang(Servant):
+    "荒"
+    def config(self):
+        self.aura = False
+    
+    def set_skills(self):
+        self.skill_1 = skill_.HuangSkill1(self)
+        self.skill_3 = skill_.HuangSkill3(self)
 
 class QingMing(Servant):
     "晴明"
@@ -541,3 +568,4 @@ class Scarecrow(basePet):
     def remove(self):
         self.target.team.remove_pet(self)
         self.status.hp = -1
+

@@ -153,6 +153,19 @@ class Fear(StatusBuff):
     def _invalid(self):
         self.target.change_damage_ratio(-0.75)
 
+class Doom(StatusBuff):
+    "茨木的增伤 ID 106"
+    def config(self):
+        self.coexist_num = 3
+        self.id = 106
+        self.layer = 1000
+    
+    def _valid(self):
+        self.target.change_damage_ratio(+0.33333)
+    
+    def _invalid(self):
+        self.target.change_damage_ratio(-0.33333)
+
 # class IndirectDM(baseBuff):
 #     "间接伤害buff ID为特有数字99"
 #     def config(self):
